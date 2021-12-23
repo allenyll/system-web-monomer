@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+	<title>欢迎登录</title>
+	<link rel="icon" href="/img/favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="/css/pages-login.css" />
+	<script src="/js/vue.js"></script>
+	<script src="/js/axios.js"></script>
+</head>
+
+<body>
+	<!-- 头部栏位 -->
+	<!--页面顶部-->
+<div id="nav-bottom">
+	<!--顶部-->
+</div>
+
+	<div class="login-box" id="app">
+
+		<!--loginArea-->
+		<div class="loginArea">
+			<div class="py-container login">
+				<div class="loginform">
+					<ul class="sui-nav nav-tabs tab-wraped">
+						<li id="tabOtherLogin" onclick="switchOtherLogin()">
+							<a href="javascript:void(0)" data-toggle="tab" >
+								<h3>扫描登录</h3>
+							</a>
+						</li>
+						<li id="tabSuiForm" class="active" onclick="switchSuiForm()">
+							<a href="javascript:void(0)" data-toggle="tab" >
+								<h3>账户登录</h3>
+							</a>
+						</li>
+					</ul>
+					<div class="tab-content tab-wraped">
+						<div id="index" class="tab-pane ">
+							<p>二维码登录，暂为官网二维码</p>
+							<img src="/img/wx_cz.jpg" />
+						</div>
+						<div id="profile" class="tab-pane active">
+							<form class="sui-form">
+								<div class="input-prepend"><span class="add-on loginname"></span>
+									<input id="inputName" type="text" v-model="username"  placeholder="邮箱/用户名/手机号" class="span2 input-xfat">
+								</div>
+								<div class="input-prepend"><span class="add-on loginpwd"></span>
+									<input id="inputPassword" type="password" v-model="password"  placeholder="请输入密码" class="span2 input-xfat">
+								</div>
+								<div class="setting">
+									<label class="checkbox inline">
+										<input name="m1" type="checkbox" value="2" checked="">
+										自动登录
+									</label>
+									<span class="forget">忘记密码？</span>
+								</div>
+								<div class="logined">
+									<!--<a class="sui-btn btn-block btn-xlarge btn-danger" href="home.html" target="_blank">登&nbsp;&nbsp;录</a>-->
+									<button class="sui-btn btn-block btn-xlarge btn-danger" type="button" @click="login()">登&nbsp;&nbsp;录</button>
+									{{msg}}
+								</div>
+							</form>
+							<div class="otherlogin">
+								<div class="types">
+									<ul>
+										<li><img src="/img/qq.png" width="35px" height="35px" /></li>
+										<li><img src="/img/sina.png" /></li>
+										<li><img src="/img/ali.png" /></li>
+										<li><img src="/img/weixin.png" /></li>
+									</ul>
+								</div>
+<!--								<span class="register"><a href="register.html" target="_blank">立即注册</a></span>-->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--foot-->
+		<div class="py-container copyright">
+			<div class="beian">浙ICP备18051592号-1
+			</div>
+		</div>
+	</div>
+
+<script type="text/javascript">
+	function switchSuiForm() {
+		document.getElementById('index').className = "tab-pane";
+		document.getElementById('profile').className = "tab-pane active";
+		document.getElementById('tabSuiForm').className = "active";
+		document.getElementById('tabOtherLogin').className = "";
+	}
+	function switchOtherLogin() {
+		document.getElementById('index').className = "tab-pane active";
+		document.getElementById('profile').className = "tab-pane";
+		document.getElementById('tabSuiForm').className = "";
+		document.getElementById('tabOtherLogin').className = "active";
+	}
+</script>
+<script th:inline="javascript">
+	const app = new Vue({
+		el:"#app",
+		data:{
+			username:"",
+			password:"",
+			msg:"",
+			from:[[${from}]]
+		},
+		methods:{
+			login:function () {
+				app.msg="正在登录";
+				axios.post("/auth/login?username="+app.username+"&password="+app.password).then(function (response) {
+					if (response.data.success){
+						app.msg = "登录成功";
+						//跳转原地址
+						location.href = app.from;
+					} else{
+						app.msg = "登录失败";
+					}
+				})
+			}
+		}
+	})
+</script>
+</body>
+</html>
