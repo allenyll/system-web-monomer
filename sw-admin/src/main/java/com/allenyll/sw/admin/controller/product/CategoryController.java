@@ -78,32 +78,8 @@ public class CategoryController extends BaseController<CategoryServiceImpl, Cate
     public DataResponse tree(String name){
         log.info("============= {开始调用方法：tree(} =============");
         Map<String, Object> result = new HashMap<>();
-        QueryWrapper<Category> wrapper = new QueryWrapper<>();
-        wrapper.eq("IS_DELETE", 0);
-        wrapper.orderBy(true, true, "CATEGORY_SEQ");
-        if(StringUtil.isNotEmpty(name)){
-            wrapper.like("CATEGORY_NAME", name);
-        }
-        List<Category> categories = service.list(wrapper);
-
-        if(CollectionUtil.isNotEmpty(categories)){
-            for(Category category:categories){
-                QueryWrapper<File> fileEntityWrapper = new QueryWrapper<>();
-                fileEntityWrapper.eq("FILE_TYPE", FileDict.CATEGORY.getCode());
-                fileEntityWrapper.eq("IS_DELETE", 0);
-                fileEntityWrapper.eq("FK_ID", category.getId());
-                List<File> sysFiles = fileService.list(fileEntityWrapper);
-                if(CollectionUtil.isNotEmpty(sysFiles)){
-                    category.setFileUrl(sysFiles.get(0).getFileUrl());
-                }else{
-                    category.setFileUrl(DEFAULT_URL);
-                }
-            }
-        }
-
-        List<CategoryTree> list = getCategoryTree(categories, BaseConstants.MENU_ROOT);
-
-        result.put("list", list);
+        List<CategoryTree> categoryTrees = service.tree(name);
+        result.put("list", categoryTrees);
         log.info("============= {结束调用方法：tree(} =============");
         return DataResponse.success(result);
     }
@@ -112,26 +88,7 @@ public class CategoryController extends BaseController<CategoryServiceImpl, Cate
     @ResponseBody
     @RequestMapping(value = "categoryTree", method = RequestMethod.GET)
     public DataResponse categoryTree(){
-        QueryWrapper<Category> wrapper = new QueryWrapper<>();
-        wrapper.eq("IS_DELETE", 0);
-        wrapper.eq("IS_USED", StatusDict.START.getCode());
-        wrapper.orderBy(true, true, "CATEGORY_SEQ");
-        List<Category> list = service.list(wrapper);
-        if(!CollectionUtils.isEmpty(list)){
-            for(Category _category:list){
-                setParentCategory(_category);
-            }
-        }
-
-        Category category = new Category();
-        category.setId(0L);
-        category.setIsDelete(0);
-        category.setCategoryName("顶级节点");
-        category.setCategoryNo("top");
-        category.setParentId(1000000L);
-        list.add(category);
-
-        List<CategoryTree> trees = getCategoryTree(list, 1000000L);
+        List<CategoryTree> trees = service.categoryTree();
         Map<String, Object> result = new HashMap<>();
         result.put("categoryTree", trees);
         return DataResponse.success(result);
@@ -141,39 +98,15 @@ public class CategoryController extends BaseController<CategoryServiceImpl, Cate
     @ResponseBody
     @RequestMapping(value = "getCategoryInfo/{id}", method = RequestMethod.GET)
     public DataResponse getCategoryInfo(@PathVariable Long id){
-
-        DataResponse dataResponse = super.get(id);
-        Map<String, Object> data = (Map<String, Object>) dataResponse.get("data");
-        Category category = (Category) data.get("obj");
-
-        // 获取同级分类
-        if(category == null){
-            return DataResponse.fail("没有获取到对应的分类");
+        Map<String, Object> data;
+        try {
+            data = service.getCategoryInfo(id);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DataResponse.fail(e.getMessage());
         }
-
-        // 获取子分类
-        QueryWrapper<Category> childWrapper = new QueryWrapper<>();
-        childWrapper.eq("PARENT_ID", category.getParentId());
-        childWrapper.eq("IS_USED", "SW1302");
-        childWrapper.eq("IS_DELETE", 0);
-        childWrapper.orderBy(true, false, "CATEGORY_NO");
-
-        List<Category> brotherCategoryList = categoryService.list(childWrapper);
-
-        List<CategoryTree> trees = new ArrayList<>();
-        if(CollectionUtil.isNotEmpty(brotherCategoryList)){
-            for (Category _category:brotherCategoryList){
-                CategoryTree categoryTree = setCategoryTree(_category);
-                trees.add(categoryTree);
-            }
-        }
-
-        data.put("list", trees);
-        data.put("obj", setCategoryTree(category));
-        dataResponse.put("data", data);
         log.info("==================结束调用 get================");
-
-        return dataResponse;
+        return DataResponse.success(data);
     }
 
     @Override
@@ -181,80 +114,15 @@ public class CategoryController extends BaseController<CategoryServiceImpl, Cate
     @ResponseBody
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public DataResponse get(@PathVariable Long id){
-
-        DataResponse dataResponse = super.get(id);
-        Map<String, Object> data = (Map<String, Object>) dataResponse.get("data");
-        Category category = (Category) data.get("obj");
-
-        if(BaseConstants.MENU_ROOT.equals(id)){
-            category = new Category();
-            category.setId(id);
-            category.setCategoryName("顶级节点");
-        }else{
-            setParentCategory(category);
+        Map<String, Object> data;
+        try {
+            data = service.getCategoryById(id);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return DataResponse.fail(e.getMessage());
         }
-
-        File file = getFile(category);
-        if(file != null){
-            category.setFileUrl(file.getFileUrl());
-        }else{
-            file = new File();
-        }
-
-        // 获取子分类
-        QueryWrapper<Category> childWrapper = new QueryWrapper<>();
-        childWrapper.eq("PARENT_ID", id);
-        childWrapper.eq("IS_DELETE", 0);
-        childWrapper.eq("IS_USED", "SW1302");
-        childWrapper.orderBy(true, true, "CATEGORY_SEQ");
-        List<Category> childCategoryList = categoryService.list(childWrapper);
-        childCategoryList.add(category);
-        for(Category child:childCategoryList){
-            File _file = getFile(child);
-            if(_file != null){
-                child.setFileUrl(_file.getFileUrl());
-            } else {
-                child.setFileUrl(DEFAULT_URL);
-            }
-        }
-
-        if(!(0L == id)){
-            List<CategoryTree> trees = getCategoryTree(childCategoryList, 0L);
-            data.put("tree", trees);
-        }
-
-        data.put("file", file);
-        data.put("obj", category);
-        dataResponse.put("data", data);
         log.info("==================结束调用 get================");
-
-        return dataResponse;
-    }
-
-    private File getFile(Category category) {
-        QueryWrapper<File> fileEntityWrapper = new QueryWrapper<>();
-        fileEntityWrapper.eq("FILE_TYPE", FileDict.CATEGORY.getCode());
-        fileEntityWrapper.eq("IS_DELETE", 0);
-        fileEntityWrapper.eq("FK_ID", category.getId());
-        List<File> _sysFiles = fileService.list(fileEntityWrapper);
-        File _file = null;
-        if(CollectionUtil.isNotEmpty(_sysFiles)){
-            _file = _sysFiles.get(0);
-        }
-        return _file;
-    }
-
-    private CategoryTree setCategoryTree(Category category){
-        CategoryTree categoryTree = new CategoryTree();
-        categoryTree.setId(category.getId());
-        categoryTree.setParentId(category.getParentId());
-        categoryTree.setName(category.getCategoryName());
-        categoryTree.setCode(category.getCategoryNo());
-        categoryTree.setLabel(category.getCategoryName());
-        categoryTree.setTitle(category.getCategoryName());
-        categoryTree.setLevel(category.getCategoryLevel());
-        categoryTree.setIsUsed(StatusDict.codeToMessage(category.getIsUsed()));
-        return categoryTree;
+        return DataResponse.success(data);
     }
 
     @ApiOperation("添加分类")
@@ -298,41 +166,4 @@ public class CategoryController extends BaseController<CategoryServiceImpl, Cate
         }
         return super.update(user, category);
     }
-
-    private void setParentCategory(Category category) {
-        Long parentId = category.getParentId();
-        if(parentId.equals(BaseConstants.MENU_ROOT)){
-            category.setParentCategoryName("顶级节点");
-        }else{
-            QueryWrapper<Category> entityWrapper = new QueryWrapper<>();
-            entityWrapper.eq("IS_DELETE", 0);
-            entityWrapper.eq("ID", parentId);
-            Category _category = service.getOne(entityWrapper);
-            if(_category != null){
-                category.setParentCategoryName(_category.getCategoryName());
-            }
-        }
-    }
-
-    private List<CategoryTree> getCategoryTree(List<Category> list, Long rootId) {
-        List<CategoryTree> trees = new ArrayList<>();
-        CategoryTree tree;
-        if(CollectionUtil.isNotEmpty(list)){
-            for(Category obj:list){
-                tree = new CategoryTree();
-                tree.setId(obj.getId());
-                tree.setParentId(obj.getParentId());
-                tree.setName(obj.getCategoryName());
-                tree.setCode(obj.getCategoryNo());
-                tree.setTitle(obj.getCategoryName());
-                tree.setLabel(obj.getCategoryName());
-                tree.setLevel(obj.getCategoryLevel());
-                tree.setIsUsed(StatusDict.codeToMessage(obj.getIsUsed()));
-                tree.setUrl(obj.getFileUrl());
-                trees.add(tree);
-            }
-        }
-        return TreeUtil.build(trees, rootId);
-    }
-
 }

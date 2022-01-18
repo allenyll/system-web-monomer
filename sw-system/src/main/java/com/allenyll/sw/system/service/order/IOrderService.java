@@ -160,8 +160,15 @@ public interface IOrderService extends IService<Order> {
 
     /**
      * 更新订单信息，扣减库存
-     * @param orderId 参数
+     * @param order 参数
      * @param transaction 支付信息
      */
-    void updateOrder(Long orderId, Transaction transaction);
+    void updateOrder(Order order, Transaction transaction);
+
+    /**
+     * 支付完成更新订单
+     * @param params
+     * @return
+     */
+    DataResponse updateOrderStatus(Map<String, Object> params);
 }

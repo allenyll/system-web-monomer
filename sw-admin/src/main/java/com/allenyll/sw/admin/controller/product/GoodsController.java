@@ -90,7 +90,10 @@ public class GoodsController extends BaseController<GoodsServiceImpl, Goods> {
     @ResponseBody
     @RequestMapping(value = "getGoodsListByType", method = RequestMethod.POST)
     public DataResponse getGoodsListByType(@RequestBody Map<String, Object> params) {
-        return service.getGoodsListByType(params);
+        Map<String, Object> result = new HashMap<>();
+        List<Goods> list = service.getGoodsListByType(params);
+        result.put("goodsList", list);
+        return DataResponse.success(result);
     }
 
     @ApiOperation("分页查询商品")

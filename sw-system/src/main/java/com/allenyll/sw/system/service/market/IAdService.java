@@ -14,5 +14,5 @@ public interface IAdService extends IService<Ad> {
      * @param params
      * @return
      */
-    Result<List<Ad>> getAdList(Map<String, Object> params);
+    List<Ad> getAdList(Map<String, Object> params);
 }

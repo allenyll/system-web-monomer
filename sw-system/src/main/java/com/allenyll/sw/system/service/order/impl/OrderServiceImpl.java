@@ -6,6 +6,7 @@ import com.allenyll.sw.system.mapper.order.OrderMapper;
 import com.allenyll.sw.system.producer.OrderProducer;
 import com.allenyll.sw.system.service.order.IOrderAftersaleService;
 import com.allenyll.sw.system.service.order.IOrderService;
+import com.allenyll.sw.system.service.pay.impl.TransactionServiceImpl;
 import com.allenyll.sw.system.service.product.IGoodsService;
 import com.allenyll.sw.system.service.product.ISkuService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -77,6 +78,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private IGoodsService goodsService;
+    
+    @Autowired
+    private TransactionServiceImpl transactionService;
 
     @Override
     public void createOrder(Order order, Map<String, Object> param) {
@@ -252,22 +256,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Long orderId = MapUtil.getLong(map, "orderId");
         String note = MapUtil.getString(map, "note");
         String time = DateUtil.getCurrentDateTime();
-            try {
-                Order order = orderMapper.selectById(orderId);
-                order.setNote(note);
-                order.setUpdateUser(userId);
-                order.setUpdateTime(DateUtil.getCurrentDateTime());
-                // 未支付的订单才执行
-                if (OrderStatusDict.START.getCode().equals(order.getOrderStatus())) {
-                    order.setOrderStatus(OrderStatusDict.CANCEL.getCode());
-                    orderMapper.updateById(order);
-                    // 记录日志
-                    dealOperateLog(userId, time, order, note, "cancel", optName);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return DataResponse.fail("订单取消失败");
+        try {
+            Order order = orderMapper.selectById(orderId);
+            order.setNote(note);
+            order.setUpdateUser(userId);
+            order.setUpdateTime(DateUtil.getCurrentDateTime());
+            // 未支付的订单才执行
+            if (OrderStatusDict.START.getCode().equals(order.getOrderStatus())) {
+                order.setOrderStatus(OrderStatusDict.CANCEL.getCode());
+                orderMapper.updateById(order);
+                // 记录日志
+                dealOperateLog(userId, time, order, note, "cancel", optName);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return DataResponse.fail("订单取消失败");
+        }
         return DataResponse.success();
     }
 
@@ -297,33 +301,36 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     private void dealList(List<Order> list) {
-        if (CollectionUtil.isNotEmpty(list)) {
-            for (Order order : list) {
-                Map<String, Object> _map = new HashMap<>();
-                _map.put("orderId", order.getId());
-                Dict statusDict = dictService.getDictByCode(order.getOrderStatus());
-                if (statusDict != null) {
-                    order.setStatusStr(statusDict.getName());
-                }
-                // 获取订单明细
-                List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(_map);
-                if (CollectionUtil.isNotEmpty(orderDetails)) {
-                    for (OrderDetail orderDetail:orderDetails) {
-                        if (!OrderSaleDict.START.getCode().equals(orderDetail.getStatus()) && !OrderSaleDict.CANCEL.getCode().equals(orderDetail.getStatus())) {
-                            QueryWrapper<OrderAftersale> wrapper = new QueryWrapper<>();
-                            wrapper.eq("ORDER_DETAIL_ID", orderDetail.getId());
-                            wrapper.ne("AFTERSALE_STATUS", OrderSaleDict.START.getCode());
-                            wrapper.ne("AFTERSALE_STATUS", OrderSaleDict.CANCEL.getCode());
-                            OrderAftersale aftersale = orderAftersaleService.getOne(wrapper);
-                            if (aftersale != null) {
-                                orderDetail.setOrderAftersaleId(aftersale.getId());
-                            }
-                        }
+        if (CollectionUtil.isEmpty(list)) {
+            return;
+        }
+        for (Order order : list) {
+            Map<String, Object> _map = new HashMap<>();
+            _map.put("orderId", order.getId());
+            Dict statusDict = dictService.getDictByCode(order.getOrderStatus());
+            if (statusDict != null) {
+                order.setStatusStr(statusDict.getName());
+            }
+            // 获取订单明细
+            List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(_map);
+            if (CollectionUtil.isEmpty(orderDetails)) {
+                continue;
+            }
+            for (OrderDetail orderDetail:orderDetails) {
+                if (!OrderSaleDict.START.getCode().equals(orderDetail.getStatus()) && !OrderSaleDict.CANCEL.getCode().equals(orderDetail.getStatus())) {
+                    QueryWrapper<OrderAftersale> wrapper = new QueryWrapper<>();
+                    wrapper.eq("ORDER_DETAIL_ID", orderDetail.getId());
+                    wrapper.ne("AFTERSALE_STATUS", OrderSaleDict.START.getCode());
+                    wrapper.ne("AFTERSALE_STATUS", OrderSaleDict.CANCEL.getCode());
+                    OrderAftersale aftersale = orderAftersaleService.getOne(wrapper);
+                    if (aftersale != null) {
+                        orderDetail.setOrderAftersaleId(aftersale.getId());
                     }
                 }
-                order.setOrderDetails(orderDetails);
             }
+            order.setOrderDetails(orderDetails);
         }
+        
     }
 
     @Override
@@ -545,15 +552,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public void updateOrder(Long orderId, Transaction transaction) {
-        Order order = orderMapper.selectById(orderId);
-        // TODO 订单不存在， 支付渠道改造
-        if(order == null){
-            return;
-        }
+    public void updateOrder(Order order, Transaction transaction) {
         LOGGER.info("交易支付订单Order: "+order);
         order.setPayAmount(transaction.getAmount());
-        // TODO 支付渠道改造
         order.setPayChannel(transaction.getPayChannel());
         order.setPayTime(transaction.getTransactionTime());
         order.setOrderStatus(OrderStatusDict.PAY.getCode());
@@ -579,6 +580,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
             }
         }
+    }
+
+    @Override
+    public DataResponse updateOrderStatus(Map<String, Object> params) {
+        String transactionId = MapUtil.getMapValue(params, "transactionId");
+        Long orderId = MapUtil.getLong(params, "orderId");
+        String type = MapUtil.getString(params, "type");
+        QueryWrapper<Transaction> entityWrapper = new QueryWrapper<>();
+        entityWrapper.eq("IS_DELETE", 0);
+        entityWrapper.eq("ID", transactionId);
+        Transaction transaction = transactionService.getOne(entityWrapper);
+        if(transaction != null){
+            transaction.setStatus("SW1202");
+            transactionService.updateById(transaction);
+            // 更新订单状态
+            if("order".equals(type)){
+                Order order = orderMapper.selectById(orderId);
+                updateOrder(order, transaction);
+            }
+        }
+        return DataResponse.success();
     }
 
 }

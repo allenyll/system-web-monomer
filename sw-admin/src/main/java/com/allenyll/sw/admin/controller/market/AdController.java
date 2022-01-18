@@ -1,6 +1,7 @@
 package com.allenyll.sw.admin.controller.market;
 
 import com.allenyll.sw.common.annotation.CurrentUser;
+import com.allenyll.sw.common.entity.market.Message;
 import com.allenyll.sw.common.enums.dict.StatusDict;
 import com.allenyll.sw.common.util.*;
 import com.allenyll.sw.system.BaseController;
@@ -68,7 +69,10 @@ public class AdController extends BaseController<AdServiceImpl, Ad> {
     @ResponseBody
     @RequestMapping(value = "getAdList", method = RequestMethod.POST)
     public Result<List<Ad>> getAdList(@RequestBody Map<String, Object> params) {
-        return service.getAdList(params);
+        List<Ad> adList = service.getAdList(params);
+        Result<List<Ad>> result = new Result<>();
+        result.setData(adList);
+        return result;
     }
 
 }

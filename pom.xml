@@ -39,6 +39,7 @@
         <swagger2.version>1.9.0.RELEASE</swagger2.version>
         <json.lib.version>2.4</json.lib.version>
         <jdom.version>2.0.2</jdom.version>
+        <wxJava.version>4.2.0</wxJava.version>
     </properties>
 
     <modules>
@@ -260,6 +261,18 @@
                 <groupId>org.jdom</groupId>
                 <artifactId>jdom</artifactId>
                 <version>${jdom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>wx-java-pay-spring-boot-starter</artifactId>
+                <version>${wxJava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.7.17</version>
             </dependency>
             
             <dependency>

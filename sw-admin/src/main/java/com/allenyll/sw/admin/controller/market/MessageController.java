@@ -35,24 +35,17 @@ public class MessageController extends BaseController<MessageServiceImpl, Messag
         return super.add(user, entity);
     }
 
-    @ApiOperation("根据类型获取消息")
+    @ApiOperation("[小程序接口]根据类型获取消息")
     @ResponseBody
     @RequestMapping(value = "getMessageListByType", method = RequestMethod.POST)
     public DataResponse getMessageListByType(@RequestBody Map<String, Object> params){
         Map<String, Object> result = new HashMap<>();
-        String msgType = MapUtil.getString(params, "msgType");
-        if (StringUtil.isEmpty(msgType)) {
-            msgType = "SW2701";
-        }
-        QueryWrapper<Message> wrapper = new QueryWrapper<>();
-        wrapper.eq("TYPE", msgType);
-        wrapper.eq("IS_DELETE", 0);
-        List<Message> list = service.list(wrapper);
+        List<Message> list = service.getMessageList(params);
         result.put("messageList", list);
         return DataResponse.success(result);
     }
 
-    @ApiOperation("根据ID获取消息")
+    @ApiOperation("[小程序接口]根据ID获取消息")
     @ResponseBody
     @RequestMapping(value = "getMessageById", method = RequestMethod.POST)
     public DataResponse getMessageById(@RequestBody Map<String, Object> params){

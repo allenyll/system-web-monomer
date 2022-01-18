@@ -47,7 +47,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         final String loginType = request.getHeader(BaseConstants.LOGIN_TYPE);
 
         if (StringUtil.isEmpty(header)) {
-            log.info("请求认证消息不能为空！");
+            log.error("请求认证消息不能为空！");
             response.setStatus(401);
             response.getWriter().write( "请求认证消息不能为空!" );
             return false;
@@ -57,7 +57,10 @@ public class AuthInterceptor implements HandlerInterceptor {
         try {
             claims = JwtUtil.verifyToken(header);
         } catch (Exception e) {
-            log.info("获取Claims失败, token 过期！");
+            log.error("获取Claims失败, token 过期！");
+            if (BaseConstants.SW_WECHAT.equals(loginType)) {
+                response.setStatus(401);
+            }
             response.getWriter().write( "获取Claims失败, token 过期!" );
             return false;
         }
@@ -67,8 +70,11 @@ public class AuthInterceptor implements HandlerInterceptor {
             // 查看缓存是否失效
             String redisToken = cacheUtil.get(jti, String.class);
             if (StringUtil.isEmpty(redisToken)) {
-                log.info("token缓存过期！");
-                response.getWriter().write( "获取Claims失败, token 过期!" );
+                log.error("token缓存过期！");
+                if (BaseConstants.SW_WECHAT.equals(loginType)) {
+                    response.setStatus(401);
+                }
+                response.getWriter().write( "token缓存过期!" );
                 return false;
             }
             if (StringUtil.isNotEmpty(username)) {
@@ -86,7 +92,6 @@ public class AuthInterceptor implements HandlerInterceptor {
                 request.setAttribute(SecurityConstants.CURRENT_USER, user);
                 return true;
             }
-            
         }
         
         return false;

@@ -654,15 +654,13 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public DataResponse getGoodsListByType(Map<String, Object> params) {
-        Map<String, Object> result = new HashMap<>();
+    public List<Goods> getGoodsListByType(Map<String, Object> params) {
         String goodsType = MapUtil.getString(params, "goodsType");
         QueryWrapper<Goods> wrapper = new QueryWrapper<>();
         wrapper.eq("IS_DELETE", 0);
         wrapper.eq("IS_USED", StatusDict.START.getCode());
         if (StringUtil.isEmpty(goodsType)) {
-            result.put("goodsList", new ArrayList<>());
-            return DataResponse.success(result);
+            return new ArrayList<>();
         }
         if ("new".equals(goodsType)) {
             wrapper.eq("IS_NEW", IsOrNoDict.YES.getCode());
@@ -679,8 +677,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 setFile(goods);
             }
         }
-        result.put("goodsList", list);
-        return DataResponse.success(result);
+        return list;
     }
 
     @Override

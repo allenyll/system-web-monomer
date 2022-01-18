@@ -8,6 +8,7 @@ import com.allenyll.sw.common.entity.product.Goods;
 import com.allenyll.sw.common.entity.system.User;
 import com.allenyll.sw.common.util.Result;
 
+import java.util.List;
 import java.util.Map;
 
 public interface IGoodsService extends IService<Goods> {
@@ -58,7 +59,7 @@ public interface IGoodsService extends IService<Goods> {
      * @param params
      * @return
      */
-    DataResponse getGoodsListByType(Map<String, Object> params);
+    List<Goods> getGoodsListByType(Map<String, Object> params);
 
     /**
      * 更新商品状态

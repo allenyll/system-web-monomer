@@ -29,8 +29,7 @@ public class AdServiceImpl extends ServiceImpl<AdMapper, Ad> implements com.alle
     private AdMapper adMapper;
     
     @Override
-    public Result<List<Ad>> getAdList(Map<String, Object> params) {
-        Map<String, Object> resultMap = new HashMap<>();
+    public List<Ad> getAdList(Map<String, Object> params) {
         String adType = MapUtil.getString(params, "adType");
         String time = DateUtil.getCurrentDateTime();
         QueryWrapper<Ad> wrapper = new QueryWrapper<>();
@@ -40,8 +39,6 @@ public class AdServiceImpl extends ServiceImpl<AdMapper, Ad> implements com.alle
         wrapper.gt("END_TIME", time);
         wrapper.lt("START_TIME", time);
         List<Ad> ads = adMapper.selectList(wrapper);
-        Result<List<Ad>> result = new Result<>();
-        result.setData(ads);
-        return result;
+        return ads;
     }
 }

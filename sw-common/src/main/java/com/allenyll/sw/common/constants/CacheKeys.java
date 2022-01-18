@@ -44,6 +44,7 @@ public class CacheKeys {
      * 当前登录用户id
      */
     public static final String CURRENT_USER_ID = "current_user_id_";
-
-
+    
+    public static final String WX_INDEX = "wx_index";
+    
 }
