@@ -137,7 +137,7 @@ public interface IOrderService extends IService<Order> {
      * @param params
      * @return
      */
-    DataResponse sendMessage(Map<String, Object> params);
+    void sendMessage(Map<String, Object> params);
 
     /**
      * 获取订单信息

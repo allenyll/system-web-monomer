@@ -13,5 +13,5 @@ public interface ICustomerBalanceDetailService extends IService<CustomerBalanceD
      * @param param
      * @return
      */
-    DataResponse getBalanceDetail(Map<String, Object> param);
+    Map<String, Object> getBalanceDetail(Map<String, Object> param);
 }

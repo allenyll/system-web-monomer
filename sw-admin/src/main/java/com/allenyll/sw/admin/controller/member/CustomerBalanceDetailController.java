@@ -1,5 +1,6 @@
 package com.allenyll.sw.admin.controller.member;
 
+import com.allenyll.sw.common.util.Result;
 import com.allenyll.sw.system.BaseController;
 import com.allenyll.sw.system.service.member.impl.CustomerBalanceDetailServiceImpl;
 import com.allenyll.sw.common.entity.customer.CustomerBalanceDetail;
@@ -9,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,7 +20,7 @@ import java.util.Map;
  * @Version:      1.0
  */
 @Slf4j
-@Api("余额明细接口")
+@Api(value = "余额明细", tags = "微信余额模块")
 @RestController
 @RequestMapping("customerBalanceDetail")
 public class CustomerBalanceDetailController extends BaseController<CustomerBalanceDetailServiceImpl, CustomerBalanceDetail> {
@@ -29,12 +31,15 @@ public class CustomerBalanceDetailController extends BaseController<CustomerBala
      * @param param
      * @return
      */
-    @ApiOperation("微信余额详细")
+    @ApiOperation("[小程序接口]微信余额详细")
     @ResponseBody
     @RequestMapping(value = "/getBalanceDetail", method = RequestMethod.POST)
-    public DataResponse getDetail(@RequestBody Map<String, Object> param){
+    public Result getDetail(@RequestBody Map<String, Object> param){
         log.info("==============开始调用 getBalanceDetail ================");
-        return service.getBalanceDetail(param);
+        Result result = new Result();
+        Map<String, Object> data = service.getBalanceDetail(param);
+        result.setData(data);
+        return result;
     }
 
 }

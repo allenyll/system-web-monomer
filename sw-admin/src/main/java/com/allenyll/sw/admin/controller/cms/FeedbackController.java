@@ -26,7 +26,7 @@ import java.util.Map;
 @RequestMapping("/feedback")
 public class FeedbackController extends BaseController<FeedbackServiceImpl,Feedback> {
 
-    @ApiOperation("保存意见")
+    @ApiOperation("[小程序接口]保存意见")
     @ResponseBody
     @RequestMapping(value = "/saveFeedback", method = RequestMethod.POST)
     public Result saveFeedback(@CurrentUser(isFull = true) User user, @RequestBody Map<String, Object> params){

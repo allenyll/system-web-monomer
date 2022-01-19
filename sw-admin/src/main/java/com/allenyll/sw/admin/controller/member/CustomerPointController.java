@@ -1,5 +1,6 @@
 package com.allenyll.sw.admin.controller.member;
 
+import com.allenyll.sw.common.util.Result;
 import com.allenyll.sw.system.BaseController;
 import com.allenyll.sw.system.service.member.impl.CustomerPointServiceImpl;
 import com.allenyll.sw.system.service.member.impl.CustomerServiceImpl;
@@ -71,32 +72,6 @@ public class CustomerPointController extends BaseController<CustomerPointService
         return response;
     }
 
-    /**
-     * 获取积分
-     * @param param
-     * @return
-     */
-    @ApiOperation("获取积分")
-    @ResponseBody
-    @RequestMapping(value = "/getPoint", method = RequestMethod.POST)
-    public DataResponse getPoint(@RequestBody Map<String, Object> param){
-        log.info("==============开始调用getPoint================");
-        return service.getPotint(param);
-    }
-
-    /**
-     * 获取积分详情
-     * @param param
-     * @return
-     */
-    @ApiOperation("获取积分详情")
-    @ResponseBody
-    @RequestMapping(value = "/getPointDetail", method = RequestMethod.POST)
-    public DataResponse getPointDetail(@RequestBody Map<String, Object> param){
-        log.info("==============开始调用 getPointDetail ================");
-        return service.getPointDetail(param);
-    }
-
     @ResponseBody
     @RequestMapping(value = "/selectOne", method = RequestMethod.POST)
     public CustomerPoint selectOne(@RequestBody Map<String, Object> map) {
@@ -104,6 +79,38 @@ public class CustomerPointController extends BaseController<CustomerPointService
         customerPointEntityWrapper.eq("IS_DELETE", 0);
         customerPointEntityWrapper.eq("CUSTOMER_ID", MapUtil.getLong(map, "CUSTOMER_ID"));
         return service.getOne(customerPointEntityWrapper);
+    }
+
+    /**
+     * 获取积分
+     * @param param
+     * @return
+     */
+    @ApiOperation("[小程序接口]获取积分")
+    @ResponseBody
+    @RequestMapping(value = "/getPoint", method = RequestMethod.POST)
+    public Result getPoint(@RequestBody Map<String, Object> param){
+        log.info("==============开始调用getPoint================");
+        Result result = new Result();
+        Map<String, Object> data = service.getPoint(param);
+        result.setData(data);
+        return result;
+    }
+
+    /**
+     * 获取积分详情
+     * @param param
+     * @return
+     */
+    @ApiOperation("[小程序接口]获取积分详情")
+    @ResponseBody
+    @RequestMapping(value = "/getPointDetail", method = RequestMethod.POST)
+    public Result getPointDetail(@RequestBody Map<String, Object> param){
+        log.info("==============开始调用 getPointDetail ================");
+        Result result = new Result();
+        Map<String, Object> data = service.getPointDetail(param);
+        result.setData(data);
+        return result;
     }
 
 }

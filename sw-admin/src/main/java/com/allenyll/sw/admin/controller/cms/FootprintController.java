@@ -46,7 +46,7 @@ public class FootprintController extends BaseController<FootprintServiceImpl,Foo
         return DataResponse.success(result);
     }
 
-    @ApiOperation("商品浏览记录")
+    @ApiOperation("[小程序接口]保存商品浏览记录")
     @ResponseBody
     @RequestMapping(value = "/saveFootprint", method = RequestMethod.POST)
     public Result saveFootprint(@CurrentUser(isFull = true) User user, @RequestBody Map<String, Object> params){
@@ -54,7 +54,7 @@ public class FootprintController extends BaseController<FootprintServiceImpl,Foo
         return new Result();
     }
 
-    @ApiOperation("小程序获取浏览记录")
+    @ApiOperation("[小程序接口]小程序获取浏览记录")
     @ResponseBody
     @RequestMapping(value = "/getFootprint/{customerId}", method = RequestMethod.POST)
     public Result<List<Footprint>>  getFootprint(@PathVariable Long customerId){
@@ -62,7 +62,7 @@ public class FootprintController extends BaseController<FootprintServiceImpl,Foo
         return result;
     }
 
-    @ApiOperation("删除商品浏览记录")
+    @ApiOperation("[小程序接口]删除商品浏览记录")
     @ResponseBody
     @RequestMapping(value = "/deleteFootprint", method = RequestMethod.POST)
     public Result deleteFootprint(@CurrentUser(isFull = true) User user, @RequestBody Map<String, Object> params){

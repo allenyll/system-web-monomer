@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,21 +46,24 @@ public class KeywordsController extends BaseController<KeywordsServiceImpl, Keyw
         return super.add(user, keywords);
     }
 
-    @ApiOperation("获取关键词")
+    @ApiOperation("[小程序接口]获取关键词")
     @ResponseBody
     @RequestMapping(value = "getSearchKeyword", method = RequestMethod.POST)
     public Result<Map> getSearchKeyword(@RequestBody Map<String, Object> params){
         return service.getSearchKeyword(params);
     }
 
-    @ApiOperation("获取关键词列表")
+    @ApiOperation("[小程序接口]获取关键词列表")
     @ResponseBody
     @RequestMapping(value = "getKeywords", method = RequestMethod.POST)
-    public DataResponse getKeywords(@RequestBody Map<String, Object> params){
-        Map<String, Object> result = new HashedMap();
+    public Result getKeywords(@RequestBody Map<String, Object> params){
+        Result result = new Result();
+        Map<String, Object> data = new HashMap<>();
         String keyword = MapUtil.getString(params, "keyword");
         if (StringUtil.isEmpty(keyword)) {
-            return DataResponse.fail("关键字为空，无法查询");
+            log.error("关键字为空，无法查询");
+            result.fail("关键字为空，无法查询");
+            return result;
         }
         QueryWrapper<Keywords> wrapper = new QueryWrapper<>();
         wrapper.eq("IS_DELETE", 0);
@@ -82,9 +86,9 @@ public class KeywordsController extends BaseController<KeywordsServiceImpl, Keyw
         searchHistory.setUpdateUser(MapUtil.getLong(params, "customerId"));
         searchHistoryService.save(searchHistory);
 
-        result.put("keywordList", keywords);
-
-        return DataResponse.success(result);
+        data.put("keywordList", keywords);
+        result.setData(data);
+        return result;
     }
 
 }

@@ -30,7 +30,7 @@ public class CustomerBalanceDetailServiceImpl extends ServiceImpl<CustomerBalanc
     private CustomerBalanceDetailMapper customerBalanceDetailMapper;
     
     @Override
-    public DataResponse getBalanceDetail(Map<String, Object> param) {
+    public Map<String, Object> getBalanceDetail(Map<String, Object> param) {
         Map<String, Object> result = new HashMap<>();
 
         Long customerId = MapUtil.getLong(param, "customerId");
@@ -59,6 +59,6 @@ public class CustomerBalanceDetailServiceImpl extends ServiceImpl<CustomerBalanc
 
         result.put("list", list);
 
-        return DataResponse.success(result);
+        return result;
     }
 }

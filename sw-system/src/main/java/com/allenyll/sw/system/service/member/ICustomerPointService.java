@@ -13,12 +13,12 @@ public interface ICustomerPointService extends IService<CustomerPoint> {
      * @param param
      * @return
      */
-    DataResponse getPointDetail(Map<String, Object> param);
+    Map<String, Object> getPointDetail(Map<String, Object> param);
 
     /**
      * 获取积分
      * @param param
      * @return
      */
-    DataResponse getPotint(Map<String, Object> param);
+    Map<String, Object> getPoint(Map<String, Object> param);
 }

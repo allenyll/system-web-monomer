@@ -74,5 +74,5 @@ public interface IGoodsService extends IService<Goods> {
      * @param params
      * @return
      */
-    DataResponse getGoodsByCategory(Map<String, Object> params);
+    Map<String, Object> getGoodsByCategory(Map<String, Object> params);
 }

@@ -69,36 +69,6 @@ public class CustomerController extends BaseController<CustomerServiceImpl, Cust
         return service.selectUserByName(userName);
     }
 
-    @ResponseBody
-    @ApiOperation(value = "更新用户")
-    @RequestMapping(value = "/updateCustomer", method = RequestMethod.POST)
-    public Result<Customer> updateCustomer(@RequestBody Customer customer){
-        Result<Customer> result = service.updateCustomer(customer);
-        return result;
-    }
-
-    @ApiOperation(value = "更新用户")
-    @RequestMapping(value = "/updateCustomerAccount", method = RequestMethod.POST)
-    public Result<Customer> updateCustomerAccount(@RequestBody Map<String, Object> params){
-        return service.updateCustomerAccount(params);
-    }
-
-    @ApiOperation(value = "根据openid查询用户")
-    @ResponseBody
-    @RequestMapping(value = "queryUserByOpenId", method = RequestMethod.POST)
-    public Result<Customer>  queryUserByOpenId(@RequestParam String openid){
-        log.info("开始调用查询微信用户openid:" + openid);
-        Result<Customer> result = service.queryUserByOpenId(openid);
-        return result;
-    }
-
-    @ApiOperation(value = "获取微信用户手机号，并更新到数据库")
-    @ResponseBody
-    @RequestMapping(value = "/getPhoneNumber", method = RequestMethod.POST)
-    public Result<Customer> getPhoneNumber(@RequestBody Map<String, Object> params){
-        return service.getPhoneNumber(params);
-    }
-
     @ApiOperation(value = "获取客户列表")
     @ResponseBody
     @RequestMapping(value = "getCustomerList", method = RequestMethod.POST)
@@ -112,5 +82,34 @@ public class CustomerController extends BaseController<CustomerServiceImpl, Cust
     public Result<CustomerResult> getCustomerPage(@RequestBody CustomerQueryDto customerQueryDto ) {
         return service.getCustomerPage(customerQueryDto);
     }
+    
+    @ResponseBody
+    @ApiOperation(value = "[小程序接口]更新用户")
+    @RequestMapping(value = "/updateCustomer", method = RequestMethod.POST)
+    public Result<Customer> updateCustomer(@RequestBody Customer customer){
+        Result<Customer> result = service.updateCustomer(customer);
+        return result;
+    }
 
+    @ApiOperation(value = "[小程序接口]更新用户")
+    @RequestMapping(value = "/updateCustomerAccount", method = RequestMethod.POST)
+    public Result<Customer> updateCustomerAccount(@RequestBody Map<String, Object> params){
+        return service.updateCustomerAccount(params);
+    }
+
+    @ApiOperation(value = "[小程序接口]根据openid查询用户")
+    @ResponseBody
+    @RequestMapping(value = "queryUserByOpenId", method = RequestMethod.POST)
+    public Result<Customer>  queryUserByOpenId(@RequestParam String openid){
+        log.info("开始调用查询微信用户openid:" + openid);
+        Result<Customer> result = service.queryUserByOpenId(openid);
+        return result;
+    }
+
+    @ApiOperation(value = "[小程序接口]获取微信用户手机号，并更新到数据库")
+    @ResponseBody
+    @RequestMapping(value = "/getPhoneNumber", method = RequestMethod.POST)
+    public Result<Customer> getPhoneNumber(@RequestBody Map<String, Object> params){
+        return service.getPhoneNumber(params);
+    }
 }

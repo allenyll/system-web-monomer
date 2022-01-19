@@ -1,5 +1,6 @@
 package com.allenyll.sw.admin.controller.member;
 
+import com.allenyll.sw.common.exception.BusinessException;
 import com.allenyll.sw.system.BaseController;
 import com.allenyll.sw.system.service.member.impl.CustomerBalanceDetailServiceImpl;
 import com.allenyll.sw.system.service.member.impl.CustomerBalanceServiceImpl;
@@ -7,6 +8,7 @@ import com.allenyll.sw.system.service.member.impl.CustomerServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.allenyll.sw.common.entity.customer.CustomerBalance;
 import com.allenyll.sw.common.util.*;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@Api(value = "余额", tags = "微信余额模块")
 @RequestMapping("customerBalance")
 public class CustomerBalanceController extends BaseController<CustomerBalanceServiceImpl, CustomerBalance> {
 
@@ -28,19 +31,30 @@ public class CustomerBalanceController extends BaseController<CustomerBalanceSer
     @Autowired
     CustomerBalanceDetailServiceImpl customerBalanceDetailService;
 
-    @ApiOperation("更新活余额")
+    @ApiOperation("[小程序接口]更新活余额")
     @RequestMapping(value = "/updateBalance",method = RequestMethod.POST)
     @ResponseBody
-    public DataResponse updateObj(@RequestBody Map<String, Object> params){
-        return service.updateBalance(params);
+    public Result updateObj(@RequestBody Map<String, Object> params){
+        Result result = new Result();
+        try {
+            service.updateBalance(params);
+        } catch (BusinessException e) {
+            log.error(e.getMessage());
+            result.fail(e.getMessage());
+            return result;
+        }
+        return result;
     }
 
-    @ApiOperation("获取余额")
+    @ApiOperation("[小程序接口]获取余额")
     @ResponseBody
     @RequestMapping(value = "/getBalance", method = RequestMethod.POST)
-    public DataResponse getBalance(@RequestBody Map<String, Object> param){
+    public Result getBalance(@RequestBody Map<String, Object> param){
         log.info("==============开始调用 getBalance================");
-        return service.getBalance(param);
+        Result result = new Result();
+        Map<String, Object> data = service.getBalance(param);
+        result.setData(data);
+        return result;
     }
 
     @ResponseBody

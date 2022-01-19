@@ -1,12 +1,14 @@
 package com.allenyll.sw.common.util;
 
+import com.allenyll.sw.common.constants.BaseConstants;
+
 /**
  * @Description:  通用返回结果
  * @Author:       allenyll
  * @Date:         2020/6/1 7:07 下午
  * @Version:      1.0
  */
-public class Result<T> extends BaseResult{
+public class Result<T> extends BaseResult {
 
     private static final long serialVersionUID = 1L;
 

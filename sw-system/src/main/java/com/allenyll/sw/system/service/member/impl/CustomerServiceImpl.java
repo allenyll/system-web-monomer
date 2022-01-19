@@ -1,5 +1,6 @@
 package com.allenyll.sw.system.service.member.impl;
 
+import com.allenyll.sw.common.enums.dict.SexDict;
 import com.allenyll.sw.common.enums.dict.UserStatus;
 import com.allenyll.sw.core.cache.util.CacheUtil;
 import com.allenyll.sw.core.properties.WxProperties;
@@ -86,9 +87,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customer.setUpdateTime(date);
             String gender = "";
             if("1".equals(customer.getGender())){
-                gender = "SW0201";
+                gender = SexDict.MAN.getCode();
             } else if("0".equals(customer.getGender())){
-                gender = "SW0202";
+                gender = SexDict.WOMAN.getCode();
             }
             customer.setGender(gender);
             customer.setOpenid(customer.getOpenid());
@@ -104,7 +105,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customer.setCustomerName(customer.getNickName());
 
             // 注册送积分
-
             try {
                 customerMapper.insert(customer);
                 sendPoint(customer);
@@ -133,9 +133,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (hasCustomer != null) {
             String gender = "";
             if("1".equals(customer.getGender())){
-                gender = "SW0201";
+                gender = SexDict.MAN.getCode();
             } else if("0".equals(customer.getGender())){
-                gender = "SW0202";
+                gender = SexDict.WOMAN.getCode();
             }
             hasCustomer.setGender(gender);
             hasCustomer.setEmail(customer.getEmail());

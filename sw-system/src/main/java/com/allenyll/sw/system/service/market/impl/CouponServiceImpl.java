@@ -1,6 +1,7 @@
 package com.allenyll.sw.system.service.market.impl;
 
 import com.allenyll.sw.common.enums.dict.CouponDict;
+import com.allenyll.sw.common.exception.BusinessException;
 import com.allenyll.sw.system.service.member.impl.CustomerServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -94,11 +95,11 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
         return DataResponse.success();
     }
 
-    public DataResponse getCouponList(Map<String, Object> params) {
+    public Map<String, Object> getCouponList(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<>();
         String customerId = MapUtil.getString(params, "customerId");
         if (StringUtil.isEmpty(customerId)){
-            return DataResponse.fail("用户不能为空，请选择！");
+            throw new BusinessException("用户不能为空，请选择！");
         }
 
         params.put("time", DateUtil.getCurrentDate());
@@ -107,6 +108,6 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
 
         result.put("list", list);
 
-        return DataResponse.success(result);
+        return result;
     }
 }

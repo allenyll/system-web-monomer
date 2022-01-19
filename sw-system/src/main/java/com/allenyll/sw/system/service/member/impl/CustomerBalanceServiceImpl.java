@@ -2,6 +2,7 @@ package com.allenyll.sw.system.service.member.impl;
 
 import com.allenyll.sw.common.entity.customer.CustomerBalanceDetail;
 import com.allenyll.sw.common.enums.dict.StatusDict;
+import com.allenyll.sw.common.exception.BusinessException;
 import com.allenyll.sw.common.util.*;
 import com.allenyll.sw.system.mapper.member.CustomerBalanceDetailMapper;
 import com.allenyll.sw.system.mapper.member.CustomerBalanceMapper;
@@ -33,22 +34,22 @@ public class CustomerBalanceServiceImpl extends ServiceImpl<CustomerBalanceMappe
     private CustomerBalanceDetailMapper customerBalanceDetailMapper;
     
     @Override
-    public DataResponse updateBalance(Map<String, Object> params) {
+    public void updateBalance(Map<String, Object> params) {
         String openid = MapUtil.getMapValue(params, "openid");
-        if(openid.equals(AppContext.getCurrentUserWechatOpenId())){
+        if (openid.equals(AppContext.getCurrentUserWechatOpenId())) {
             String amountStr = MapUtil.getMapValue(params, "amount", "0");
             Long customerId = MapUtil.getLong(params, "customerId");
             String remark = MapUtil.getMapValue(params, "remark", "");
             BigDecimal amount = new BigDecimal(amountStr);
-            if(StringUtil.isEmpty(openid)){
-                return DataResponse.fail("用户不能为空");
+            if (StringUtil.isEmpty(openid)) {
+                throw new BusinessException("用户不能为空");
             }
 
             QueryWrapper<CustomerBalance> customerBalanceEntityWrapper = new QueryWrapper<>();
             customerBalanceEntityWrapper.eq("IS_DELETE", 0);
             customerBalanceEntityWrapper.eq("CUSTOMER_ID", customerId);
             CustomerBalance customerBalance = customerBalanceMapper.selectOne(customerBalanceEntityWrapper);
-            if(customerBalance == null){
+            if (customerBalance == null) {
                 // 新增
                 customerBalance = new CustomerBalance();
                 customerBalance.setBalance(amount);
@@ -60,7 +61,7 @@ public class CustomerBalanceServiceImpl extends ServiceImpl<CustomerBalanceMappe
                 customerBalance.setUpdateUser(customerId);
                 customerBalance.setUpdateTime(DateUtil.getCurrentDateTime());
                 customerBalanceMapper.insert(customerBalance);
-            }else{
+            } else {
                 BigDecimal balance = customerBalance.getBalance();
                 balance = balance.add(amount);
                 customerBalance.setBalance(balance);
@@ -83,14 +84,13 @@ public class CustomerBalanceServiceImpl extends ServiceImpl<CustomerBalanceMappe
             customerBalanceDetail.setUpdateUser(customerId);
             customerBalanceDetail.setUpdateTime(DateUtil.getCurrentDateTime());
             customerBalanceDetailMapper.insert(customerBalanceDetail);
-        }else{
-            DataResponse.fail("当前登录用户不匹配");
+        } else {
+            throw new BusinessException("当前登录用户不匹配");
         }
-        return DataResponse.success();
     }
 
     @Override
-    public DataResponse getBalance(Map<String, Object> param) {
+    public Map<String, Object> getBalance(Map<String, Object> param) {
         Map<String, Object> result = new HashMap<>();
 
         String customerId = MapUtil.getMapValue(param, "customerId");
@@ -107,6 +107,6 @@ public class CustomerBalanceServiceImpl extends ServiceImpl<CustomerBalanceMappe
 
         result.put("customerBalance", customerBalance);
 
-        return DataResponse.success(result);
+        return result;
     }
 }

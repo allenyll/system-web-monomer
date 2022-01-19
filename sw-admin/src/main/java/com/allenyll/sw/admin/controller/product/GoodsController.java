@@ -204,42 +204,67 @@ public class GoodsController extends BaseController<GoodsServiceImpl, Goods> {
         return DataResponse.success(result);
     }
 
-    @ApiOperation("根据分类获取商品")
+    @ApiOperation("获取商品列表")
     @ResponseBody
-    @RequestMapping(value = "/getGoods", method = RequestMethod.POST)
-    public DataResponse getGoods(@RequestBody Map<String, Object> params){
-        return service.getGoodsByCategory(params);
+    @RequestMapping(value = "/getGoodsListByCondition", method = RequestMethod.POST)
+    public Result<GoodsResult> getGoodsListByCondition(@RequestBody GoodsQueryDto goodsQueryDto){
+        return service.getGoodsListByCondition(goodsQueryDto);
     }
 
-    @ApiOperation("小程序获取商品详情")
+    @ApiOperation("获取商品库存信息")
+    @ResponseBody
+    @RequestMapping(value = "/getStock", method = RequestMethod.POST)
+    public Result<GoodsResult> getStock(@RequestBody GoodsQueryDto goodsQueryDto){
+        return service.getStock(goodsQueryDto);
+    }
+
+    @ApiOperation("导入商品")
+    @ResponseBody
+    @RequestMapping(value = "/importGoods", method = RequestMethod.POST)
+    public Result<GoodsResult> importGoods(@RequestBody GoodsQueryDto goodsQueryDto, @CurrentUser(isFull = true) User user){
+        return service.importGoods(goodsQueryDto, user);
+    }
+
+    @ApiOperation("[小程序接口]小程序获取商品详情")
     @ResponseBody
     @RequestMapping(value = "/getGoodsInfo/{id}", method = RequestMethod.POST)
-    public DataResponse getGoodsInfo(@PathVariable Long id){
-        Map<String, Object> result = new HashMap<>();
+    public Result getGoodsInfo(@PathVariable Long id){
+        Result result = new Result();
+        Map<String, Object> dataMap = new HashMap<>();
         DataResponse dataResponse = super.get(id);
         Map<String, Object> data = (Map<String, Object>) dataResponse.get("data");
         Goods goods = (Goods) data.get("obj");
         if(goods == null){
-            return DataResponse.fail("商品不存在");
+            result.fail("商品不存在");
+            return result;
         }
-
         goodsService.setFile(goods);
 
         try {
-            result = goodsService.getGoodsInfo(goods);
+            dataMap = goodsService.getGoodsInfo(goods);
         } catch (Exception e) {
-            LOGGER.error("赋值异常");
-            e.printStackTrace();
+            LOGGER.error("赋值异常：", e.getMessage());
         }
-
-        return DataResponse.success(result);
+        result.setData(dataMap);
+        return result;
     }
 
-    @ApiOperation("查询商品")
+    @ApiOperation("[小程序接口]根据分类获取商品")
+    @ResponseBody
+    @RequestMapping(value = "/getGoods", method = RequestMethod.POST)
+    public Result getGoods(@RequestBody Map<String, Object> params){
+        Result result = new Result();
+        Map<String, Object> dataMap = service.getGoodsByCategory(params);
+        result.setData(dataMap);
+        return result;
+    }
+
+    @ApiOperation("[小程序接口]查询商品")
     @ResponseBody
     @RequestMapping(value = "/searchGoods", method = RequestMethod.POST)
-    public DataResponse searchGoods(@RequestBody Map<String, Object> params){
-        Map<String, Object> result = new HashMap<>();
+    public Result searchGoods(@RequestBody Map<String, Object> params){
+        Result result = new Result();
+        Map<String, Object> data = new HashMap<>();
 
         page = MapUtil.getIntValue(params, "page");
         limit = MapUtil.getIntValue(params, "limit");
@@ -264,7 +289,9 @@ public class GoodsController extends BaseController<GoodsServiceImpl, Goods> {
             // 新增搜索记录
             Long customerId = MapUtil.getLong(params, "userId");
             if (StringUtil.isEmpty(customerId)) {
-                return DataResponse.fail("关联用户为空，无法查询");
+                LOGGER.error("关联用户为空，无法查询");
+                result.fail("关联用户为空，无法查询");
+                return result;
             }
             SearchHistory searchHistory = new SearchHistory();
             searchHistory.setId(SnowflakeIdWorker.generateId());
@@ -286,7 +313,7 @@ public class GoodsController extends BaseController<GoodsServiceImpl, Goods> {
 
         int total = goodsService.count(wrapper);
         Page<Goods> pages = service.page(new Page<>(page, limit), wrapper);
-        List<Goods> list = pages.getRecords();
+        List<Goods> list = pages.getRecords(); 
         if(CollectionUtil.isNotEmpty(list)){
             for (Goods goods: list){
                 goodsService.setFile(goods);
@@ -300,32 +327,11 @@ public class GoodsController extends BaseController<GoodsServiceImpl, Goods> {
             totalPage = total/limit + 1;
         }
 
-        result.put("currentPage", page);
-        result.put("totalPage", totalPage);
-        result.put("goods", list);
-
-        return DataResponse.success(result);
-    }
-
-    @ApiOperation("获取商品列表")
-    @ResponseBody
-    @RequestMapping(value = "/getGoodsListByCondition", method = RequestMethod.POST)
-    public Result<GoodsResult> getGoodsListByCondition(@RequestBody GoodsQueryDto goodsQueryDto){
-        return service.getGoodsListByCondition(goodsQueryDto);
-    }
-
-    @ApiOperation("获取商品库存信息")
-    @ResponseBody
-    @RequestMapping(value = "/getStock", method = RequestMethod.POST)
-    public Result<GoodsResult> getStock(@RequestBody GoodsQueryDto goodsQueryDto){
-        return service.getStock(goodsQueryDto);
-    }
-
-    @ApiOperation("导入商品")
-    @ResponseBody
-    @RequestMapping(value = "/importGoods", method = RequestMethod.POST)
-    public Result<GoodsResult> importGoods(@RequestBody GoodsQueryDto goodsQueryDto, @CurrentUser(isFull = true) User user){
-        return service.importGoods(goodsQueryDto, user);
+        data.put("currentPage", page);
+        data.put("totalPage", totalPage);
+        data.put("goods", list);    
+        result.setData(data);
+        return result;
     }
 
 }

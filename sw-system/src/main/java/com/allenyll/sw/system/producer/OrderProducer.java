@@ -19,14 +19,26 @@ public class OrderProducer implements RabbitTemplate.ConfirmCallback {
 
     @Autowired
     private AmqpTemplate amqpTemplate;
+    
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    
+    @Autowired
+    public OrderProducer(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+        rabbitTemplate.setConfirmCallback(this);
+    }
 
     public void sendMessage(Map<String, Object> param, long delayTimes){
-        amqpTemplate.convertAndSend(QueueEnum.QUEUE_ORDER_CANCEL_TTL.getExchange(), QueueEnum.QUEUE_ORDER_CANCEL_TTL.getRouteKey(), param, message -> {
+        LOGGER.info("send delay message orderId:{}", MapUtil.getString(param, "orderId"));
+        CorrelationData correlationData = new CorrelationData(MapUtil.getString(param, "orderId"));
+        rabbitTemplate.convertAndSend(QueueEnum.QUEUE_ORDER_CANCEL_TTL.getExchange(), 
+                QueueEnum.QUEUE_ORDER_CANCEL_TTL.getRouteKey(), param, message -> {
             message.getMessageProperties().setExpiration(String.valueOf(delayTimes));
             return message;
-        });
+        }, correlationData);
         // TODO 将消息冗余到消息备份表，防止投送失败造成订单丢失
-        LOGGER.info("send delay message orderId:{}", MapUtil.getString(param, "orderId"));
+        
     }
 
     @Override

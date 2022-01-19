@@ -1,18 +1,17 @@
 package com.allenyll.sw.admin.controller.market;
 
 import com.allenyll.sw.common.enums.dict.CouponDict;
+import com.allenyll.sw.common.exception.BusinessException;
+import com.allenyll.sw.common.util.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.allenyll.sw.system.service.market.impl.CouponServiceImpl;
 import com.allenyll.sw.common.annotation.CurrentUser;
 import com.allenyll.sw.system.BaseController;
 import com.allenyll.sw.common.entity.market.Coupon;
 import com.allenyll.sw.common.entity.system.User;
-import com.allenyll.sw.common.util.CollectionUtil;
-import com.allenyll.sw.common.util.DataResponse;
-import com.allenyll.sw.common.util.SnowflakeIdWorker;
-import com.allenyll.sw.common.util.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Api("优惠券接口")
 @RestController
 @RequestMapping("coupon")
@@ -75,19 +75,28 @@ public class CouponController extends BaseController<CouponServiceImpl, Coupon> 
         return dataResponse;
     }
 
-    @ApiOperation("获取优惠券列表")
-    @RequestMapping(value = "getCouponList", method = RequestMethod.POST)
-    public DataResponse getCouponList(@RequestBody Map<String, Object> params){
-        DataResponse dataResponse = couponService.getCouponList(params);
-        return dataResponse;
-    }
-
     @ApiOperation("调度任务获取所有未被删除的优惠券")
     @RequestMapping(value = "getCoupons", method = RequestMethod.POST)
     public List<Coupon> getCoupons(@RequestBody Map<String, Object> param) {
         QueryWrapper<Coupon> couponEntityWrapper = new QueryWrapper<>();
         couponEntityWrapper.eq("is_delete", 0);
         return service.list(couponEntityWrapper);
+    }
+
+    @ApiOperation("[小程序接口]获取优惠券列表")
+    @RequestMapping(value = "getCouponList", method = RequestMethod.POST)
+    public Result getCouponList(@RequestBody Map<String, Object> params){
+        Result result = new Result<>();
+        Map<String, Object> data;
+        try {
+            data = couponService.getCouponList(params);
+        } catch (BusinessException e) {
+            log.error(e.getMessage());
+            result.fail(e.getMessage());
+            return result;
+        }
+        result.setData(data);
+        return result;
     }
 
 }

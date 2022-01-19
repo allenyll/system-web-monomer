@@ -94,23 +94,26 @@ public class CategoryController extends BaseController<CategoryServiceImpl, Cate
         return DataResponse.success(result);
     }
 
-    @ApiOperation("小程序获取分类详情")
+    @ApiOperation("[小程序接口]获取分类详情")
     @ResponseBody
     @RequestMapping(value = "getCategoryInfo/{id}", method = RequestMethod.GET)
-    public DataResponse getCategoryInfo(@PathVariable Long id){
+    public Result getCategoryInfo(@PathVariable Long id){
+        Result result = new Result();
         Map<String, Object> data;
         try {
             data = service.getCategoryInfo(id);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return DataResponse.fail(e.getMessage());
+            result.fail(e.getMessage());
+            return result;
         }
+        result.setData(data);
         log.info("==================结束调用 get================");
-        return DataResponse.success(data);
+        return result;
     }
 
     @Override
-    @ApiOperation("小程序根据ID获取分类")
+    @ApiOperation("根据ID获取分类")
     @ResponseBody
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public DataResponse get(@PathVariable Long id){
@@ -165,5 +168,36 @@ public class CategoryController extends BaseController<CategoryServiceImpl, Cate
             fileService.deleteFile(category.getId());
         }
         return super.update(user, category);
+    }
+
+    @ApiOperation("[小程序接口]获取分类树")
+    @ResponseBody
+    @RequestMapping(value = "getCategoryTree", method = RequestMethod.GET)
+    public Result getCategoryTree(String name){
+        log.info("============= {开始调用方法：getCategoryTree(} =============");
+        Result result = new Result();
+        Map<String, Object> data = new HashMap<>();
+        List<CategoryTree> categoryTrees = service.tree(name);
+        data.put("list", categoryTrees);
+        result.setData(data);
+        log.info("============= {结束调用方法：getCategoryTree(} =============");
+        return result;
+    }
+
+    @ApiOperation("[小程序接口]根据ID获取分类")
+    @ResponseBody
+    @RequestMapping(value = "/getCategory/{id}", method = RequestMethod.GET)
+    public Result getCategory(@PathVariable Long id){
+        Result result = new Result();
+        Map<String, Object> data;
+        try {
+            data = service.getCategoryById(id);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            result.fail(e.getMessage());
+            return result;
+        }
+        result.setData(data);
+        return result;
     }
 }

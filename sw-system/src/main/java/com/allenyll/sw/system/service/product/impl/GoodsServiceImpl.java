@@ -185,7 +185,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         goodsParam.setCategoryName(specCategory.getCategoryName());
 
         String promotionType = goods.getPromotionType();
-        if(!"SW2001".equals(promotionType)){
+        if(!PromotionDict.NO.getCode().equals(promotionType)){
             QueryWrapper<GoodsFullReduce> wrapper = new QueryWrapper<>();
             wrapper.eq("GOODS_ID", goodsParam.getId());
             List<GoodsFullReduce> goodsFullReduces = goodsFullReduceService.list(wrapper);
@@ -719,7 +719,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public DataResponse getGoodsByCategory(Map<String, Object> params) {
+    public Map<String, Object> getGoodsByCategory(Map<String, Object> params) {
         Map<String, Object> result = new HashMap<>();
         int totalPage = 0;
         int page = MapUtil.getIntValue(params, "page");
@@ -748,7 +748,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         result.put("totalPage", totalPage);
         result.put("goods", list);
 
-        return DataResponse.success(result);
+        return result;
     }
 
     private void dealWidthSpecs(List<List<String>> specList, List<Sku> skuList, int index, String specOption, User user) {

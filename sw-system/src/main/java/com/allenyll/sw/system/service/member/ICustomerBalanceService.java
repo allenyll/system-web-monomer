@@ -13,12 +13,12 @@ public interface ICustomerBalanceService extends IService<CustomerBalance> {
      * @param params
      * @return
      */
-    DataResponse updateBalance(Map<String, Object> params);
+    void updateBalance(Map<String, Object> params);
 
     /**
      * 获取余额
      * @param param
      * @return
      */
-    DataResponse getBalance(Map<String, Object> param);
+    Map<String, Object> getBalance(Map<String, Object> param);
 }

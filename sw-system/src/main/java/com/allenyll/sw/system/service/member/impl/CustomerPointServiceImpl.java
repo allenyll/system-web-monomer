@@ -34,9 +34,8 @@ public class CustomerPointServiceImpl extends ServiceImpl<CustomerPointMapper, C
     private CustomerPointMapper customerPointMapper;
     
     @Override
-    public DataResponse getPointDetail(Map<String, Object> param) {
+    public Map<String, Object> getPointDetail(Map<String, Object> param) {
         Map<String, Object> result = new HashMap<>();
-
         Long customerId = MapUtil.getLong(param, "customerId");
         String action = MapUtil.getMapValue(param, "action");
         String pageStr = MapUtil.getMapValue(param, "page");
@@ -61,11 +60,11 @@ public class CustomerPointServiceImpl extends ServiceImpl<CustomerPointMapper, C
 
         result.put("list", list);
 
-        return DataResponse.success(result);
+        return result;
     }
 
     @Override
-    public DataResponse getPotint(Map<String, Object> param) {
+    public Map<String, Object> getPoint(Map<String, Object> param) {
         Map<String, Object> result = new HashMap<>();
 
         String customerId = MapUtil.getMapValue(param, "customerId");
@@ -80,6 +79,6 @@ public class CustomerPointServiceImpl extends ServiceImpl<CustomerPointMapper, C
         }
         result.put("customerPoint", customerPoint);
 
-        return DataResponse.success(result);
+        return result;
     }
 }

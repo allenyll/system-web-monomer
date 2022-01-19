@@ -1,11 +1,15 @@
 package com.allenyll.sw.admin.controller.order;
 
+import com.allenyll.sw.common.util.Result;
 import com.allenyll.sw.system.BaseController;
 import com.allenyll.sw.common.entity.order.Order;
 import com.allenyll.sw.common.entity.order.OrderDetail;
 import com.allenyll.sw.common.util.DataResponse;
 import com.allenyll.sw.common.util.StringUtil;
 import com.allenyll.sw.system.service.order.impl.OrderDetailServiceImpl;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
+@Api(tags = "订单详情接口")
 @Controller
 @RequestMapping("orderDetail")
 public class OrderDetailController extends BaseController<OrderDetailServiceImpl, OrderDetail> {
@@ -24,23 +30,27 @@ public class OrderDetailController extends BaseController<OrderDetailServiceImpl
     @Autowired
     OrderDetailServiceImpl orderDetailService;
 
+    @ApiOperation("[小程序接口]根据订单ID获取订单详情")
     @ResponseBody
     @RequestMapping(value = "/getOrderDetail/{orderId}", method = RequestMethod.POST)
-    public DataResponse getOrderDetail(@PathVariable Long orderId){
-        Map<String, Object> result = new HashMap<>();
+    public Result getOrderDetail(@PathVariable Long orderId){
+        Result result = new Result();
+        Map<String, Object> data = new HashMap<>();
         if(StringUtil.isEmpty(orderId)){
-            return DataResponse.fail("订单不存在!");
+            result.fail("订单不存在!");
+            return result;
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("orderId", orderId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("orderId", orderId);
         try {
-            Order order = orderDetailService.getOrderDetail(map);
-            result.put("order", order);
+            Order order = orderDetailService.getOrderDetail(params);
+            data.put("order", order);
         } catch (Exception e) {
-            e.printStackTrace();
-            return DataResponse.fail("获取订单失败");
+            log.error(e.getMessage());
+            result.fail("系统异常，请联系管理员！");
+            return result;
         }
-
-        return DataResponse.success(result);
+        result.setData(data);
+        return result;
     }
 }

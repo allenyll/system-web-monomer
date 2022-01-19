@@ -27,28 +27,38 @@ import java.util.Map;
 @RequestMapping("/customerAddress")
 public class CustomerAddressController extends BaseController<CustomerAddressServiceImpl, CustomerAddress> {
 
-    @ApiOperation("设置地址")
+    @ApiOperation("[小程序接口]获取地址详情")
+    @ResponseBody
+    @RequestMapping(value = "/getAddress/{id}", method = RequestMethod.GET)
+    public Result getAddress(@PathVariable Long id){
+        Result result = new Result();
+        CustomerAddress customerAddress = service.getById(id);
+        result.setData(customerAddress);
+        return result;
+    }
+
+    @ApiOperation("[小程序接口]设置地址")
     @ResponseBody
     @RequestMapping(value = "/setAddress", method = RequestMethod.POST)
     public Result setAddress(@CurrentUser(isFull = true) User user, @RequestBody Map<String, Object> params){
         return service.setAddress(user, params);
     }
 
-    @ApiOperation("获取地址列表")
+    @ApiOperation("[小程序接口]获取地址列表")
     @ResponseBody
     @RequestMapping(value = "/getAddressList", method = RequestMethod.POST)
     public Result<List<CustomerAddress>> getAddressList(@RequestBody Map<String, Object> params){
         return service.getAddressList(params);
     }
 
-    @ApiOperation("根据id删除地址")
+    @ApiOperation("[小程序接口]根据id删除地址")
     @ResponseBody
     @RequestMapping(value = "/deleteAddress",method = RequestMethod.POST)
     public Result deleteAddress(@CurrentUser(isFull = true) User user, @RequestBody Map<String, Object> params){
         return service.deleteAddress(user, params);
     }
 
-    @ApiOperation("根据ID更新地址")
+    @ApiOperation("[小程序接口]根据ID更新地址")
     @ResponseBody
     @RequestMapping(value = "/updateAddress/{id}", method = RequestMethod.POST)
     public Result updateAddress(@PathVariable String id){
@@ -62,7 +72,7 @@ public class CustomerAddressController extends BaseController<CustomerAddressSer
         return result;
     }
 
-    @ApiOperation("根据id选择地址")
+    @ApiOperation("[小程序接口]根据id选择地址")
     @RequestMapping(value = "/selectAddressById", method = RequestMethod.POST)
     public CustomerAddress selectAddressById(@RequestParam String fkAddressId) {
         return service.getById(fkAddressId);

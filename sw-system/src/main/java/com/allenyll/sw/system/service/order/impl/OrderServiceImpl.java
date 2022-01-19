@@ -50,7 +50,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    private static final long DELAY_TIMES = 1 * 60 * 1000;
+    private static final long DELAY_TIMES = 10 * 1000;
 
     @Resource
     OrderMapper orderMapper;
@@ -276,16 +276,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public DataResponse sendMessage(Map<String, Object> params) {
+    public void sendMessage(Map<String, Object> params) {
         //放入消息队列
         try {
             orderProducer.sendMessage(params, DELAY_TIMES);
-            return DataResponse.success();
         } catch (Exception e) {
-            e.printStackTrace();
-            DataResponse.fail("放置消息队列失败");
+            log.error("订单投放到消息队列失败！");
         }
-        return null;
     }
 
     @Override
