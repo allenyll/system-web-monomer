@@ -50,7 +50,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    private static final long DELAY_TIMES = 10 * 1000;
+    private static final long DELAY_TIMES = 30 * 60 * 1000; // 订单超时30分钟未支付自动取消
 
     @Resource
     OrderMapper orderMapper;
@@ -233,7 +233,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public List<Order> getOrderList(OrderQueryDto queryDto) {
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("IS_DELETE", 0);
-        wrapper.eq("ORDER_TYPE", "SW0601");
+        wrapper.eq("ORDER_TYPE", OrderTypeDict.ONLINE.getCode());
         wrapper.eq("CUSTOMER_ID", queryDto.getCustomerId());
         wrapper.orderBy(true, false, "ORDER_TIME");
 
@@ -589,7 +589,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         entityWrapper.eq("ID", transactionId);
         Transaction transaction = transactionService.getOne(entityWrapper);
         if(transaction != null){
-            transaction.setStatus("SW1202");
+            transaction.setStatus(OrderTradeDict.COMPLETE.getCode());
             transactionService.updateById(transaction);
             // 更新订单状态
             if("order".equals(type)){

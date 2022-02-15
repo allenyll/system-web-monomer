@@ -246,9 +246,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             if(StringUtil.isNotEmpty(sex)){
                 String gender = "";
                 if(sex.equals("1")){
-                    gender = "SW0201";
+                    gender = SexDict.MAN.getCode();
                 } else if(sex.equals("0")){
-                    gender = "SW0202";
+                    gender = SexDict.WOMAN.getCode();
                 }
                 customer.setGender(gender);
             }

@@ -1,5 +1,8 @@
 package com.allenyll.sw.sso.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.allenyll.sw.common.dto.CustomerQueryDto;
+import com.allenyll.sw.common.entity.customer.Customer;
 import com.allenyll.sw.common.util.Result;
 import com.allenyll.sw.common.util.StringUtil;
 import com.allenyll.sw.common.entity.auth.AuthToken;
@@ -35,10 +38,12 @@ public class WxAuthController {
      * @return
      */
     @RequestMapping(value = "/token", method = RequestMethod.POST)
-    public Result<AuthToken> token(HttpServletRequest request, @RequestBody Map<String, String> param) {
+    public Result<AuthToken> token(HttpServletRequest request, @RequestBody CustomerQueryDto customerQueryDto) {
         Result<AuthToken> result = new Result<>();
-        String code = MapUtils.getString(param, "code");
-        String wxMode = MapUtils.getString(param, "mode");
+        String code = customerQueryDto.getCode();
+        String wxMode = customerQueryDto.getMode();
+        Customer customer = customerQueryDto.getCustomer();
+        LOGGER.info("用户信息：{}", JSON.toJSONString(customer));
         //校验参数
         if (StringUtil.isEmpty(code)) {
             LOGGER.error("小程序认证编码code不能为空");
@@ -46,7 +51,7 @@ public class WxAuthController {
             return result;
         }
 
-        AuthToken authToken = wxUserService.token(request, code, wxMode);
+        AuthToken authToken = wxUserService.token(request, code, wxMode, customer);
         
         if (authToken == null) {
             result.fail("小程序获取登录失败");

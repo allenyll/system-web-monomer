@@ -1,5 +1,6 @@
 package com.allenyll.sw.common.entity.auth;
 
+import com.allenyll.sw.common.entity.customer.Customer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -30,4 +31,6 @@ public class AuthToken implements Serializable {
      * 微信openid
      */
     private String openid;
+    
+    private Customer customer;
 }

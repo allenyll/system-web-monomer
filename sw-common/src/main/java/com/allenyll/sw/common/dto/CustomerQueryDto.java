@@ -1,5 +1,6 @@
 package com.allenyll.sw.common.dto;
 
+import com.allenyll.sw.common.entity.customer.Customer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,4 +23,11 @@ public class CustomerQueryDto  extends BaseQueryDto implements Serializable {
      * 用户名称
      */
     private String customerName;
+
+    /**
+     * 小程序CODE
+     */
+    private String code;
+    
+    private Customer customer;
 }

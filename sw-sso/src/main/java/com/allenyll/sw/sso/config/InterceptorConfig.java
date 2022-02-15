@@ -23,8 +23,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registration.excludePathPatterns(                         //添加不拦截路径
                 "/auth/*", "/loginTest",
                 "/login.html","/assets/**",
-                "/css/**","/data/**","/fonts/**","/img/**","/js/**",
-                "/assembly/**", "/layui/**", "/nacos/**", "/wx/auth/token"
+                "/css/**","/data/**","/fonts/**",
+                "/img/**","/js/**","/assembly/**", 
+                "/layui/**", "/nacos/**",
+                "/wx/**"
         );
     }
 

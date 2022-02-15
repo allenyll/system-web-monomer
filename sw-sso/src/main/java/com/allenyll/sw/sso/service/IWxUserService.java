@@ -21,7 +21,7 @@ public interface IWxUserService extends IService<Customer> {
      * @param mode 所属小程序
      * @return
      */
-    AuthToken token(HttpServletRequest request, String code, String mode);
+    AuthToken token(HttpServletRequest request, String code, String mode, Customer customer);
 
     /**
      * 根据openid 查询用户

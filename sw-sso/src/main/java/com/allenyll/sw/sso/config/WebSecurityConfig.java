@@ -58,8 +58,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/", "/auth/login", "/loginTest",
                 "/auth/logout","/auth/loginPage","/login.html","/assets/**",
-                "/css/**","/data/**","/fonts/**","/img/**","/js/**",
-                "/assembly/**", "/layui/**", "/nacos/**", "/wx/auth/token");
+                "/css/**","/data/**","/fonts/**","/img/**","/js/**","/favicon.ico",
+                "/assembly/**", "/layui/**", "/nacos/**", "/wx/auth/token", "/wx/home/index");
     }
 
     @Bean
@@ -102,7 +102,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()    //限制基于Request请求访问
                 .antMatchers("/user").hasRole("admin")
-                .antMatchers("/auth/**", "/logout/**", "/login", "/wx/**")
+                .antMatchers("/auth/**", "/logout/**", "/login", "/wx/auth/token", "/wx/home/index")
                 .permitAll()
                 .anyRequest().permitAll();
                 //.authenticated();       //其他请求都需要经过验证

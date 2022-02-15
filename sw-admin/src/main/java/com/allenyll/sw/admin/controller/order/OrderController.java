@@ -2,6 +2,7 @@ package com.allenyll.sw.admin.controller.order;
 
 import com.allenyll.sw.common.annotation.CurrentUser;
 import com.allenyll.sw.common.enums.dict.OrderStatusDict;
+import com.allenyll.sw.common.enums.dict.OrderTypeDict;
 import com.allenyll.sw.system.BaseController;
 import com.allenyll.sw.system.service.order.IOrderService;
 import com.allenyll.sw.system.service.order.impl.OrderServiceImpl;
@@ -110,7 +111,7 @@ public class OrderController extends BaseController<OrderServiceImpl, Order> {
 
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("IS_DELETE", 0);
-        wrapper.eq("ORDER_TYPE", "SW0601");
+        wrapper.eq("ORDER_TYPE", OrderTypeDict.ONLINE.getCode());
         wrapper.eq("CUSTOMER_ID", MapUtil.getString(params, "customerId"));
 
         int total = service.count(wrapper);

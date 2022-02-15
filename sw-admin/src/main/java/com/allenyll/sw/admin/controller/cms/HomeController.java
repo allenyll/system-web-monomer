@@ -31,7 +31,7 @@ import java.util.concurrent.*;
 @Slf4j
 @Api(value = "小程序首页", tags = "小程序首页")
 @RestController
-@RequestMapping("/home")
+@RequestMapping("wx/home")
 public class HomeController {
     
     @Autowired

@@ -17,6 +17,11 @@ public class BaseQueryDto {
     private Long customerId;
 
     /**
+     * 系统类型
+     */
+    private String mode;
+
+    /**
      * 一页显示数量
      */
     private Integer limit;

@@ -5,6 +5,7 @@ import com.allenyll.sw.common.entity.auth.AuthUser;
 import com.allenyll.sw.common.entity.customer.Customer;
 import com.allenyll.sw.common.entity.system.User;
 import com.allenyll.sw.common.entity.wechat.WxCodeResponse;
+import com.allenyll.sw.common.enums.dict.UserStatus;
 import com.allenyll.sw.common.util.DateUtil;
 import com.allenyll.sw.common.util.Result;
 import com.allenyll.sw.common.util.SnowflakeIdWorker;
@@ -84,11 +85,11 @@ public class WxUserServiceImpl extends ServiceImpl<CustomerMapper, Customer> imp
     }
 
     @Override
-    public AuthToken token(HttpServletRequest request, String code, String mode) {
+    public AuthToken token(HttpServletRequest request, String code, String mode, Customer customer) {
         AuthToken authToken = new AuthToken();
         UserDetails userDetails = null;
         try {
-            userDetails = loadUserByJsCode(code, mode, authToken);
+            userDetails = loadUserByJsCode(code, mode, authToken, customer);
         } catch (UsernameNotFoundException e) {
             log.error("小程序登录异常：{}", e.getMessage());
             return null;
@@ -99,7 +100,7 @@ public class WxUserServiceImpl extends ServiceImpl<CustomerMapper, Customer> imp
         return authToken;
     }
 
-    private UserDetails loadUserByJsCode(String code, String mode, AuthToken authToken) throws UsernameNotFoundException {
+    private UserDetails loadUserByJsCode(String code, String mode, AuthToken authToken, Customer userInfo) throws UsernameNotFoundException {
         WxCodeResponse wxCodeResponse = getWxCodeSession(code, mode);
         String openid = wxCodeResponse.getOpenid();
         authToken.setOpenid(openid);
@@ -119,21 +120,24 @@ public class WxUserServiceImpl extends ServiceImpl<CustomerMapper, Customer> imp
         Long customerId;
         if (customer == null) {
             customer = new Customer();
-            String name = UUID.randomUUID().toString().replace("-", "");
+            String name = userInfo.getNickName();
             customer.setCustomerName(name);
+            customer.setCustomerAccount(name);
+            customer.setNickName(name);
             //用户名MD5然后再加密作为密码
             customer.setPassword(passwordEncoder.encode(name));
+            customer.setAvatarUrl(userInfo.getAvatarUrl());
             customer.setOpenid(openid);
-            customer.setStatus("SW0001");
+            customer.setStatus(UserStatus.OK.getCode());
             customer.setIsDelete(0);
             customer.setAddTime(DateUtil.getCurrentDateTime());
             customerId = SnowflakeIdWorker.generateId();
+            customer.setId(customerId);
             customerMapper.insert(customer);
         } else {
             customerId = customer.getId();
         }
-
-        // cacheUtil.set(AuthConstants.WX_SESSION_KEY + "_" + openid, wxCodeResponse.getSessionKey());
+        authToken.setCustomer(customer);
         User user = new User();
         user.setId(customerId);
         user.setUserName(customer.getCustomerName());
@@ -184,15 +188,12 @@ public class WxUserServiceImpl extends ServiceImpl<CustomerMapper, Customer> imp
     @Override
     public Result<Customer> queryUserByOpenId(String openid, String mode) {
         Result<Customer> result = new Result<>();
-        String currentOpenId = cacheUtil.get(AuthConstants.WX_CURRENT_OPENID + "_" + mode + "_" + openid, String.class);
         QueryWrapper<Customer> wrapper = new QueryWrapper<>();
-        if (openid.equals(currentOpenId)) {
-            wrapper.eq("openid", openid);
-            Customer customer = customerMapper.selectOne(wrapper);
-            result.setData(customer);
-        } else {
-            result.fail("当前登录用户不正确");
-        }
+        wrapper.eq("openid", openid);
+        wrapper.eq("is_delete", 0);
+        wrapper.eq("status", UserStatus.OK.getCode());
+        Customer customer = customerMapper.selectOne(wrapper);
+        result.setData(customer);
         return result;
     }
 
