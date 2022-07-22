@@ -11,6 +11,9 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+/**
+ * @author yuleilei
+ */
 @Configuration
 public class SwaggerConfig {
 
@@ -19,8 +22,8 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(buildApiInf())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("")) // 需要生成文档的包的位置
-                .paths(Predicates.not(PathSelectors.regex("/error.*")))//错误路径不监控
+                // 需要生成文档的包的位置
+                .apis(RequestHandlerSelectors.basePackage(""))
                 .paths(PathSelectors.any())
                 .build();
     }

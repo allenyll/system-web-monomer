@@ -1,5 +1,6 @@
 package com.allenyll.sw.sso.config;
 
+import com.allenyll.sw.sso.constants.IgnoreUrl;
 import com.allenyll.sw.sso.provider.MyAuthenticationManager;
 import com.allenyll.sw.sso.provider.WxDaoAuthenticationProvider;
 import com.allenyll.sw.sso.service.impl.UserDetailsServiceImpl;
@@ -56,10 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/", "/auth/login", "/loginTest",
-                "/auth/logout","/auth/loginPage","/login.html","/assets/**",
-                "/css/**","/data/**","/fonts/**","/img/**","/js/**","/crypto/**","/favicon.ico",
-                "/assembly/**", "/layui/**", "/nacos/**", "/wx/auth/token", "/wx/home/index");
+        web.ignoring().antMatchers(IgnoreUrl.AUTH_WHITELIST);
     }
 
     @Bean

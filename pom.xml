@@ -40,6 +40,7 @@
         <json.lib.version>2.4</json.lib.version>
         <jdom.version>2.0.2</jdom.version>
         <wxJava.version>4.2.0</wxJava.version>
+        <knife4j-spring.version>3.0.3</knife4j-spring.version>
     </properties>
 
     <modules>
@@ -133,23 +134,31 @@
             </dependency>
     
             <!-- Swagger3依赖 -->
+<!--            <dependency>-->
+<!--                <groupId>io.springfox</groupId>-->
+<!--                <artifactId>springfox-boot-starter</artifactId>-->
+<!--                <version>${swagger.version}</version>-->
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>io.swagger</groupId>-->
+<!--                        <artifactId>swagger-models</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.spring4all</groupId>-->
+<!--                <artifactId>swagger-spring-boot-starter</artifactId>-->
+<!--                <version>${swagger2.version}</version>-->
+<!--            </dependency>-->
+            <!-- 1. swagger-bootstrap-ui 目前改名为 knife4j -->
+            <!-- 2. 实现 swagger-bootstrap-ui 的自动化配置  -->
+            <!-- 3. 因为 knife4j-spring 已经引入 Swagger 依赖，所以无需重复引入 -->
             <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-boot-starter</artifactId>
-                <version>${swagger.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.swagger</groupId>
-                        <artifactId>swagger-models</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j-spring.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.spring4all</groupId>
-                <artifactId>swagger-spring-boot-starter</artifactId>
-                <version>${swagger2.version}</version>
-            </dependency>
-    
+
             <!-- io常用工具类 -->
             <dependency>
                 <groupId>commons-io</groupId>

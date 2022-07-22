@@ -176,10 +176,10 @@
         </dependency>
 
         <!-- swagger 配置 -->
-        <dependency>
-            <groupId>com.spring4all</groupId>
-            <artifactId>swagger-spring-boot-starter</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.spring4all</groupId>-->
+<!--            <artifactId>swagger-spring-boot-starter</artifactId>-->
+<!--        </dependency>-->
 
         <!-- Http 请求工具包 -->
         <dependency>
@@ -210,6 +210,11 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
         </dependency>
 
     </dependencies>
