@@ -1,5 +1,6 @@
 package com.allenyll.sw.system.service.product.impl;
 
+import com.allenyll.sw.common.constants.GoodsConstants;
 import com.allenyll.sw.common.enums.dict.*;
 import com.allenyll.sw.core.cache.util.CacheUtil;
 import com.allenyll.sw.system.service.file.impl.FileServiceImpl;
@@ -90,7 +91,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         int num = goodsMapper.insert(goods);
         String promotionType = goodsParam.getPromotionType();
         // 无优惠不保存优惠信息
-        if(!"SW2001".equals(promotionType)){
+        if(!PromotionDict.NO.getCode().equals(promotionType)){
             insertRelateList(goodsFullReduceService, goodsParam.getGoodsFullReduceList(), goodsParam.getId());
             insertRelateList(goodsLadderService, goodsParam.getGoodsLadderList(), goodsParam.getId());
         }
@@ -119,7 +120,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         map.put("fileList", fileList);
         fileService.updateFile(map);
         // 无优惠不保存优惠信息
-        if(!"SW2001".equals(promotionType)){
+        if(!PromotionDict.NO.getCode().equals(promotionType)){
             // 先删除优惠信息在新增
             deleteGoodsFullList(goodsParam);
             insertRelateList(goodsFullReduceService, goodsParam.getGoodsFullReduceList(), goodsParam.getId());
@@ -405,74 +406,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
     }
 
-
-    public static void main(String[] args) throws Exception {
-
-
-
-        /*GoodsLadder goodsLadder = new GoodsLadder();
-        goodsLadder.setDefault(true);
-        test(goodsLadder, "111");
-        System.out.println(goodsLadder);*/
-        /*String result="";
-        Random random=new Random();
-        for(int i=0;i<3;i++){
-            result+=random.nextInt(10);
-        }
-        System.out.println(result);
-
-
-        String a="c51e741b745e3da0a51a97892e06e7aa";
-        String regEx="[^0-9]";
-        Pattern p = Pattern.compile(regEx);
-        Matcher m = p.matcher(a);
-        String numStr = m.replaceAll("").trim();
-        if (numStr.length() > 19){
-            numStr = numStr.substring(0, 18);
-        }
-        System.out.println(String.format("%04d", Long.parseLong(numStr)).substring(0,4));*/
-
-
-       /* List<Map<String, Object>> set =  new ArrayList<>();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("sss","ssss");
-        map.put("qqq","ssss");
-        map.put("qq1","ssss");
-        map.put("223","ssss");
-        set.add(map);
-
-        Map<String, Object> map2 = new HashMap<>();
-        map2.put("sss","ssss");
-        map2.put("qqq","ssss");
-        map2.put("qq1","ssss");
-        map2.put("223","ssss");
-        //set.add(map2);
-
-        System.out.println(map.equals(map2));*/
-      /* String s1 = "36";
-       String s2 = "37";
-       System.out.println(s1.compareTo(s2));*/
-
-        List<Map<String, Object>> set =  new ArrayList<>();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("name","36");
-        Map<String, Object> map1 = new HashMap<>();
-        map1.put("name","37");
-        Map<String, Object> map2 = new HashMap<>();
-        map2.put("name","38");
-        Map<String, Object> map3 = new HashMap<>();
-        map3.put("name","39");
-        set.add(map3);
-        set.add(map1);
-        set.add(map);
-        set.add(map2);
-        System.out.println(set);
-        new GoodsServiceImpl().sortOption(set);
-        System.out.println(set);
-    }
-
     @Override
     public void setFile(Goods goods) {
         QueryWrapper<File> fileEntityWrapper = new QueryWrapper<>();
@@ -497,7 +430,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         QueryWrapper<Goods> wrapper = new QueryWrapper<>();
         wrapper.eq("IS_DELETE", 0);
         String sort = goodsQueryDto.getSort();
-        if ("default".equals(sort) || "category".equals(sort)) {
+        if (GoodsConstants.Goods.GOODS_SORT_DEFAULT.equals(sort) || GoodsConstants.Goods.GOODS_SORT_CATEGORY.equals(sort)) {
             // 综合排序处理
             sort = "GOODS_SEQ";
         }
@@ -533,7 +466,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
         String order = goodsQueryDto.getOrder();
         boolean isAsc;
-        if ("asc".endsWith(order)) {
+        if (GoodsConstants.Goods.GOODS_SORT_ASC.endsWith(order)) {
             isAsc = true;
         } else {
             isAsc = false;
@@ -662,13 +595,13 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         if (StringUtil.isEmpty(goodsType)) {
             return new ArrayList<>();
         }
-        if ("new".equals(goodsType)) {
+        if (GoodsConstants.GoodsType.GOODS_LABEL_NEW.equals(goodsType)) {
             wrapper.eq("IS_NEW", IsOrNoDict.YES.getCode());
-        } else if ("hot".equals(goodsType)) {
+        } else if (GoodsConstants.GoodsType.GOODS_LABEL_HOT.equals(goodsType)) {
             wrapper.eq("IS_HOT", IsOrNoDict.YES.getCode());
-        } else if ("recommend".equals(goodsType)) {
+        } else if (GoodsConstants.GoodsType.GOODS_LABEL_RECOM.equals(goodsType)) {
             wrapper.eq("IS_RECOM", IsOrNoDict.YES.getCode());
-        } else if ("best".equals(goodsType)) {
+        } else if (GoodsConstants.GoodsType.GOODS_LABEL_BEST.equals(goodsType)) {
             wrapper.eq("IS_BEST", IsOrNoDict.YES.getCode());
         }
         List<Goods> list = goodsMapper.selectList(wrapper);
@@ -691,17 +624,17 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         if(goods == null){
             return DataResponse.fail("更新失败, 商品不存在");
         }
-        if("isUsed".equals(label)){
+        if(GoodsConstants.GoodsLabel.GOODS_LABEL_USED.equals(label)){
             goods.setIsUsed(status);
-        }else if("isRecom".equals(label)){
+        }else if(GoodsConstants.GoodsLabel.GOODS_LABEL_RECOM.equals(label)){
             goods.setIsRecom(status);
-        }else if("isSpec".equals(label)){
+        }else if(GoodsConstants.GoodsLabel.GOODS_LABEL_SPEC.equals(label)){
             goods.setIsSpec(status);
-        }else if("isBest".equals(label)){
+        }else if(GoodsConstants.GoodsLabel.GOODS_LABEL_BEST.equals(label)){
             goods.setIsBest(status);
-        }else if("isHot".equals(label)){
+        }else if(GoodsConstants.GoodsLabel.GOODS_LABEL_HOT.equals(label)){
             goods.setIsHot(status);
-        }else if("isNew".equals(label)){
+        }else if(GoodsConstants.GoodsLabel.GOODS_LABEL_NEW.equals(label)){
             goods.setIsNew(status);
         }
 

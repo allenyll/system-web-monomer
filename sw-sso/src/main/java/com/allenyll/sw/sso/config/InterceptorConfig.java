@@ -24,7 +24,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 "/auth/*", "/loginTest",
                 "/login.html","/assets/**",
                 "/css/**","/data/**","/fonts/**",
-                "/img/**","/js/**","/assembly/**", 
+                "/img/**","/js/**","/crypto/**","/assembly/**",
                 "/layui/**", "/nacos/**",
                 "/wx/**"
         );

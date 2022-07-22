@@ -3,6 +3,7 @@ package com.allenyll.sw.common.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @Description:  订单查询条件
@@ -55,4 +56,16 @@ public class OrderQueryDto extends BaseQueryDto implements Serializable {
      */
     private String applyTimeEnd;
 
+    /**
+     * 售后数量
+     */
+    private Integer quantity;
+    
+    private String attributes;
+    
+    private String goodsName;
+    
+    private BigDecimal goodsPrice;
+    
+    private String pic;
 }

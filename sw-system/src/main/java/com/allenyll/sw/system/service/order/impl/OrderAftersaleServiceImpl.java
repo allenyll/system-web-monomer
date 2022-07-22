@@ -1,5 +1,6 @@
 package com.allenyll.sw.system.service.order.impl;
 
+import com.allenyll.sw.common.exception.BusinessException;
 import com.allenyll.sw.system.producer.OrderAftersaleProducer;
 import com.allenyll.sw.system.service.order.IOrderAftersaleService;
 import com.allenyll.sw.system.service.order.IOrderDetailService;
@@ -23,9 +24,11 @@ import com.allenyll.sw.common.entity.pay.TransactionRefund;
 import com.allenyll.sw.common.entity.system.File;
 import com.allenyll.sw.common.entity.system.User;
 import com.allenyll.sw.common.util.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -39,6 +42,7 @@ import java.util.List;
  * @email 806141743@qq.com
  * @date 2020-11-10 17:36:28
  */
+@Slf4j
 @Service("orderAftersaleService")
 public class OrderAftersaleServiceImpl extends ServiceImpl<OrderAftersaleMapper,OrderAftersale> implements IOrderAftersaleService {
 
@@ -120,6 +124,7 @@ public class OrderAftersaleServiceImpl extends ServiceImpl<OrderAftersaleMapper,
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Result updateAftersaleStatus(User user, OrderAftersaleDto aftersaleDto) {
         Result result = new Result();
@@ -127,122 +132,134 @@ public class OrderAftersaleServiceImpl extends ServiceImpl<OrderAftersaleMapper,
         OrderAftersale aftersale = orderAftersaleMapper.selectById(aftersaleDto.getId());
         String aftersaleType = aftersaleDto.getAftersaleType();
         String time = DateUtil.getCurrentDateTime();
-        if (aftersale != null) {
-            aftersale.setUpdateTime(DateUtil.getCurrentDateTime());
-            aftersale.setUpdateUser(user.getId());
-            aftersale.setAftersaleStatus(aftersaleDto.getAftersaleStatus());
-
-            // 不是退款，更新收货人信息
-            if (!OrderAftersaleTypeDict.REFUND.getCode().equals(aftersaleType)) {
-                // 收货人信息
-                aftersale.setReceiverName(aftersaleDto.getReceiverName());
-                aftersale.setReceiverPhone(aftersaleDto.getReceiverPhone());
-                aftersale.setReceiverPostCode(aftersaleDto.getReceiverPostCode());
-                aftersale.setReceiverProvince(aftersaleDto.getReceiverProvince());
-                aftersale.setReceiverCity(aftersaleDto.getReceiverCity());
-                aftersale.setReceiverRegion(aftersaleDto.getReceiverRegion());
-                aftersale.setReceiverDetailAddress(aftersaleDto.getReceiverDetailAddress());
-            }
-
-            if (aftersaleDto.getAftersaleStatus().equals(OrderSaleDict.CANCEL.getCode())) {
-                aftersale.setAftersaleStatus(aftersaleDto.getAftersaleStatus());
-                aftersale.setCancelTime(time);
-                orderAftersaleMapper.updateById(aftersale);
-                return result;
-            } else if(aftersaleDto.getAftersaleStatus().equals(OrderSaleDict.REFUSE.getCode())) {
-                aftersale.setRefuseReason(aftersaleDto.getRefuseReason());
-                aftersale.setDealUser(user.getId());
-                aftersale.setDealNote(aftersaleDto.getRefuseReason());
-                aftersale.setDealUserName(user.getUserName());
-                aftersale.setDealTime(time);
-            } else if(aftersaleDto.getAftersaleStatus().equals(OrderSaleDict.DEAL.getCode())) {
-                aftersale.setRefundAmount(aftersaleDto.getRefundAmount().multiply(new BigDecimal(100)));
-                aftersale.setDealUser(user.getId());
-                aftersale.setDealNote(aftersaleDto.getDealNote());
-                aftersale.setDealUserName(user.getUserName());
-                aftersale.setDealTime(time);
-                // 将消息放入取消队列
-                BeanUtils.copyProperties(aftersale, paramDto);
-                sendMessage(paramDto);
-            } else if(aftersaleDto.getAftersaleStatus().equals(OrderSaleDict.COMPLETE.getCode())) {
-                aftersale.setDealUser(user.getId());
-                aftersale.setDealNote(aftersaleDto.getDealNote());
-                aftersale.setDealUserName(user.getUserName());
-                aftersale.setDealTime(time);
-                if (OrderAftersaleTypeDict.REFUND_CHANGE.getCode().equals(aftersaleType)) {
-                    aftersale.setReceiverNote(aftersaleDto.getReceiverNote());
-                    aftersale.setReceiverTime(time);
-                }
-                if (!OrderAftersaleTypeDict.CHANGE.getCode().equals(aftersaleType)) {
-                    // 发起退款
-                    aftersale.setRefundAmount(aftersaleDto.getRefundAmount().multiply(new BigDecimal(100)));
-                    // 查询商户订单号
-                    QueryWrapper<Transaction> transactionQueryWrapper = new QueryWrapper<>();
-                    transactionQueryWrapper.eq("ORDER_ID", aftersale.getOrderId());
-                    transactionQueryWrapper.eq("STATUS", OrderTradeDict.COMPLETE.getCode());
-                    Transaction transaction = transactionService.getOne(transactionQueryWrapper);
-                    if (transaction != null) {
-                        Result<TransactionRefundDto> refundResult = wxRefundService.payRefund(transaction.getTransactionNo(), transaction.getAmount(), aftersaleDto.getRefundAmount(), aftersaleDto.getAftersaleReason());
-                        if (!refundResult.isSuccess()) {
-                            result.fail("发起退款失败!");
-                            return result;
-                        } else {
-                            // 记录退款日志
-                            TransactionRefundDto refundDto = refundResult.getData();
-                            TransactionRefund transactionRefund = new TransactionRefund();
-                            BeanUtils.copyProperties(refundDto, transactionRefund);
-                            transactionRefund.setId(SnowflakeIdWorker.generateId());
-                            transactionRefund.setAftersaleId(aftersale.getId());
-                            transactionRefund.setOrderId(aftersale.getOrderId());
-                            transactionRefund.setOrderDetailId(aftersale.getOrderDetailId());
-                            transactionRefund.setCustomerId(aftersale.getCustomerId());
-                            transactionRefund.setReturnType(aftersale.getRefundType());
-                            transactionRefund.setStatus(OrderTradeDict.COMPLETE.getCode());
-                            transactionRefund.setRefundTime(time);
-                            transactionRefund.setIsDelete(0);
-                            transactionRefund.setAddUser(aftersale.getCustomerId());
-                            transactionRefund.setAddTime(time);
-                            transactionRefund.setUpdateUser(aftersale.getCustomerId());
-                            transactionRefund.setUpdateTime(time);
-                            transactionRefundService.save(transactionRefund);
-                        }
-                    }
-                }
-                if (!OrderAftersaleTypeDict.REFUND.getCode().equals(aftersaleType)) {
-                    aftersale.setReceiverNote(aftersaleDto.getReceiverNote());
-                    aftersale.setReceiverTime(time);
-                }
-            }
-
-            // 更新订单明细售后申请状态信息
-            OrderDetail orderDetail = orderDetailService.getById(aftersale.getOrderDetailId());
-            if (orderDetail != null) {
-                orderDetail.setStatus(aftersaleDto.getAftersaleStatus());
-                orderDetail.setUpdateUser(user.getId());
-                orderDetail.setUpdateTime(time);
-                orderDetailService.updateById(orderDetail);
-            }
-            // 判断订单是否全部已申请售后，更新订单状态为关闭
-            QueryWrapper<OrderDetail> wrapper = new QueryWrapper<>();
-            wrapper.eq("STATUS", OrderSaleDict.START.getCode());
-            wrapper.eq("ORDER_ID", aftersale.getOrderId());
-            wrapper.eq("IS_DELETE", 0);
-            List<OrderDetail> orderDetailList = orderDetailService.list(wrapper);
-            if (CollectionUtil.isEmpty(orderDetailList)) {
-               Order order = orderService.getById(aftersale.getOrderId());
-               if (order != null && !OrderStatusDict.COMPLETE.getCode().equals(order.getOrderStatus())) {
-                   order.setOrderStatusRecord(order.getOrderStatus());
-                   order.setOrderStatus(OrderStatusDict.COMPLETE.getCode());
-                   order.setNote("该订单下所有商品均已申请售后，订单自动完成");
-                   order.setUpdateUser(user.getId());
-                   order.setUpdateTime(time);
-                   orderService.updateById(order);
-                   orderService.dealOperateLog(user.getId(), time, order, "该订单下所有商品均已申请售后，订单自动完成", "cancel", "");
-               }
-            }
-            orderAftersaleMapper.updateById(aftersale);
+        if (aftersale == null) {
+            log.error("未查询到关联的售后申请单！OrderId：{}", aftersaleDto.getId());
+            result.fail("未查询到关联的售后申请单！OrderId：" + aftersaleDto.getId());
+            return result;
         }
+        aftersale.setUpdateTime(DateUtil.getCurrentDateTime());
+        aftersale.setUpdateUser(user.getId());
+        aftersale.setAftersaleStatus(aftersaleDto.getAftersaleStatus());
+
+        // 不是退款，更新收货人信息
+        if (!OrderAftersaleTypeDict.REFUND.getCode().equals(aftersaleType)) {
+            // 收货人信息
+            aftersale.setReceiverName(aftersaleDto.getReceiverName());
+            aftersale.setReceiverPhone(aftersaleDto.getReceiverPhone());
+            aftersale.setReceiverPostCode(aftersaleDto.getReceiverPostCode());
+            aftersale.setReceiverProvince(aftersaleDto.getReceiverProvince());
+            aftersale.setReceiverCity(aftersaleDto.getReceiverCity());
+            aftersale.setReceiverRegion(aftersaleDto.getReceiverRegion());
+            aftersale.setReceiverDetailAddress(aftersaleDto.getReceiverDetailAddress());
+        }
+
+        if (aftersaleDto.getAftersaleStatus().equals(OrderSaleDict.CANCEL.getCode())) {
+            aftersale.setAftersaleStatus(aftersaleDto.getAftersaleStatus());
+            aftersale.setCancelTime(time);
+            orderAftersaleMapper.updateById(aftersale);
+            return result;
+        } else if(aftersaleDto.getAftersaleStatus().equals(OrderSaleDict.REFUSE.getCode())) {
+            aftersale.setRefuseReason(aftersaleDto.getRefuseReason());
+            aftersale.setDealUser(user.getId());
+            aftersale.setDealNote(aftersaleDto.getRefuseReason());
+            aftersale.setDealUserName(user.getUserName());
+            aftersale.setDealTime(time);
+        } else if(aftersaleDto.getAftersaleStatus().equals(OrderSaleDict.DEAL.getCode())) {
+            aftersale.setRefundAmount(aftersaleDto.getRefundAmount().multiply(new BigDecimal(100)));
+            aftersale.setDealUser(user.getId());
+            aftersale.setDealNote(aftersaleDto.getDealNote());
+            aftersale.setDealUserName(user.getUserName());
+            aftersale.setDealTime(time);
+            // 将消息放入取消队列
+            BeanUtils.copyProperties(aftersale, paramDto);
+            sendMessage(paramDto);
+        } else if(aftersaleDto.getAftersaleStatus().equals(OrderSaleDict.COMPLETE.getCode())) {
+            aftersale.setDealUser(user.getId());
+            aftersale.setDealNote(aftersaleDto.getDealNote());
+            aftersale.setDealUserName(user.getUserName());
+            aftersale.setDealTime(time);
+            if (OrderAftersaleTypeDict.REFUND_CHANGE.getCode().equals(aftersaleType)) {
+                aftersale.setReceiverNote(aftersaleDto.getReceiverNote());
+                aftersale.setReceiverTime(time);
+            }
+            if (!OrderAftersaleTypeDict.CHANGE.getCode().equals(aftersaleType)) {
+                try {
+                    doRefund(aftersaleDto, aftersale, time);
+                } catch (BusinessException e) {
+                    log.error(e.getMessage());
+                    result.fail(e.getMessage());
+                    return result;
+                }
+            }
+            if (!OrderAftersaleTypeDict.REFUND.getCode().equals(aftersaleType)) {
+                aftersale.setReceiverNote(aftersaleDto.getReceiverNote());
+                aftersale.setReceiverTime(time);
+            }
+        }
+
+        // 更新订单明细售后申请状态信息
+        OrderDetail orderDetail = orderDetailService.getById(aftersale.getOrderDetailId());
+        if (orderDetail != null) {
+            orderDetail.setStatus(aftersaleDto.getAftersaleStatus());
+            orderDetail.setUpdateUser(user.getId());
+            orderDetail.setUpdateTime(time);
+            orderDetailService.updateById(orderDetail);
+        }
+        // 判断订单是否全部已申请售后，更新订单状态为关闭
+        QueryWrapper<OrderDetail> wrapper = new QueryWrapper<>();
+        wrapper.eq("STATUS", OrderSaleDict.START.getCode());
+        wrapper.eq("ORDER_ID", aftersale.getOrderId());
+        wrapper.eq("IS_DELETE", 0);
+        List<OrderDetail> orderDetailList = orderDetailService.list(wrapper);
+        if (CollectionUtil.isEmpty(orderDetailList)) {
+            Order order = orderService.getById(aftersale.getOrderId());
+            if (order != null && !OrderStatusDict.COMPLETE.getCode().equals(order.getOrderStatus())) {
+                order.setOrderStatusRecord(order.getOrderStatus());
+                order.setOrderStatus(OrderStatusDict.COMPLETE.getCode());
+                order.setNote("该订单下所有商品均已申请售后，订单自动完成");
+                order.setUpdateUser(user.getId());
+                order.setUpdateTime(time);
+                orderService.updateById(order);
+                orderService.dealOperateLog(user.getId(), time, order, "该订单下所有商品均已申请售后，订单自动完成", "cancel", "");
+            }
+        }
+        orderAftersaleMapper.updateById(aftersale);
         return result;
+    }
+
+    private void doRefund(OrderAftersaleDto aftersaleDto, OrderAftersale aftersale, String time) {
+        // 发起退款
+        aftersale.setRefundAmount(aftersaleDto.getRefundAmount().multiply(new BigDecimal(100)));
+        // 查询商户订单号
+        QueryWrapper<Transaction> transactionQueryWrapper = new QueryWrapper<>();
+        transactionQueryWrapper.eq("ORDER_ID", aftersale.getOrderId());
+        transactionQueryWrapper.eq("STATUS", OrderTradeDict.COMPLETE.getCode());
+        Transaction transaction = transactionService.getOne(transactionQueryWrapper);
+        if (transaction != null) {
+            Result<TransactionRefundDto> refundResult = wxRefundService.payRefund(transaction.getTransactionNo(), 
+                    transaction.getAmount(), aftersaleDto.getRefundAmount(), aftersaleDto.getAftersaleReason());
+            if (!refundResult.isSuccess()) {
+                throw new BusinessException("发起退款失败!");
+            }
+            // 记录退款日志
+            TransactionRefundDto refundDto = refundResult.getData();
+            TransactionRefund transactionRefund = new TransactionRefund();
+            BeanUtils.copyProperties(refundDto, transactionRefund);
+            transactionRefund.setId(SnowflakeIdWorker.generateId());
+            transactionRefund.setAftersaleId(aftersale.getId());
+            transactionRefund.setOrderId(aftersale.getOrderId());
+            transactionRefund.setOrderDetailId(aftersale.getOrderDetailId());
+            transactionRefund.setCustomerId(aftersale.getCustomerId());
+            transactionRefund.setReturnType(aftersale.getRefundType());
+            transactionRefund.setStatus(OrderTradeDict.COMPLETE.getCode());
+            transactionRefund.setRefundTime(time);
+            transactionRefund.setIsDelete(0);
+            transactionRefund.setAddUser(aftersale.getCustomerId());
+            transactionRefund.setAddTime(time);
+            transactionRefund.setUpdateUser(aftersale.getCustomerId());
+            transactionRefund.setUpdateTime(time);
+            transactionRefundService.save(transactionRefund);
+        }
     }
 
     /**
@@ -256,10 +273,9 @@ public class OrderAftersaleServiceImpl extends ServiceImpl<OrderAftersaleMapper,
             orderAftersaleProducer.sendMessage(aftersaleDto, DELAY_TIMES);
             return DataResponse.success();
         } catch (Exception e) {
-            e.printStackTrace();
-            DataResponse.fail("放置消息队列失败");
+            log.error(e.getMessage());
+            return DataResponse.fail("放置消息队列失败");
         }
-        return null;
     }
 
     @Override

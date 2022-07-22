@@ -313,4 +313,8 @@ public class OrderAftersaleDto implements Serializable {
      */
     private long unDeliveryTime;
 
+    /**
+     * 售后收货地址
+     */
+    private Long companyAddressId;
 }

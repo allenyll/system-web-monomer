@@ -6,6 +6,7 @@ import com.allenyll.sw.common.entity.auth.AuthToken;
 import com.allenyll.sw.sso.exception.TokenException;
 import com.allenyll.sw.sso.service.IAuthService;
 import com.allenyll.sw.sso.util.CookieUtil;
+import com.allenyll.sw.sso.util.EncryptUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +76,11 @@ public class AuthController {
             throw new RuntimeException("请输入密码");
         }
         AuthToken authToken = new AuthToken();
+        try {
+            password = EncryptUtil.aesDecrypt(password, "o7H8uIM2O5qv65l2");
+        } catch (Exception e) {
+            LOGGER.error("解密失败：{}", e.getMessage());
+        }
         try {
             authService.login(request, authToken, username, password, clientId, clientSecret);
         } catch (Exception e) {

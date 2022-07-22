@@ -21,7 +21,7 @@ import java.util.*;
  * @Version:      1.0
  */
 @Slf4j
-@Service("wxRefundService")
+@Service("wxRefundService")                                                                                                              
 public class WxRefundServiceImpl implements IWxRefundService {
 
     @Autowired

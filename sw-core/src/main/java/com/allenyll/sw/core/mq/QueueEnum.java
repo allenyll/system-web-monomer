@@ -31,11 +31,11 @@ public enum QueueEnum {
      */
     QUEUE_APPLY_CANCEL_TTL("sw.apply.direct.ttl", "sw.apply.cancel.ttl", "sw.apply.cancel.ttl");
 
-    private String exchange;
+    private final String exchange;
 
-    private String queueName;
+    private final String queueName;
 
-    private String routeKey;
+    private final String routeKey;
 
     QueueEnum(String exchange, String queueName, String routeKey){
         this.exchange = exchange;

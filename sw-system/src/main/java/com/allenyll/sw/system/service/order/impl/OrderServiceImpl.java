@@ -1,5 +1,6 @@
 package com.allenyll.sw.system.service.order.impl;
 
+import com.allenyll.sw.common.constants.OrderConstants;
 import com.allenyll.sw.system.base.IUserService;
 import com.allenyll.sw.system.base.impl.DictServiceImpl;
 import com.allenyll.sw.system.mapper.order.OrderMapper;
@@ -512,7 +513,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         User user = userService.getById(userId);
         if (user == null) {
             user = new User();
-            if("rabbit".equals(optName)) {
+            if(OrderConstants.Order.ORDER_CANCEL_TYPE.equals(optName)) {
                 user.setUserName("RABBITMQ消息队列");
             } else {
                 user.setUserName("后台管理员");
@@ -521,19 +522,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         String remark = "订单";
         OrderOperateLog orderOperateLog = new OrderOperateLog();
-        if ("close".equals(type)) {
+        if (OrderConstants.OrderLog.ORDER_LOG_CLOSE.equals(type)) {
             remark = remark + "关闭：" + note;
-        } else if ("delete".equals(type)) {
+        } else if (OrderConstants.OrderLog.ORDER_LOG_DELETE.equals(type)) {
             remark = remark + "删除";
-        } else if ("delivery".equals(type)) {
+        } else if (OrderConstants.OrderLog.ORDER_LOG_DELIVERY.equals(type)) {
             remark = remark + "发货";
-        } else if ("money".equals(type)) {
+        } else if (OrderConstants.OrderLog.ORDER_LOG_MONEY.equals(type)) {
             remark = remark + "修改价格";
-        } else if ("receiver".equals(type)) {
+        } else if (OrderConstants.OrderLog.ORDER_LOG_RECEIVER.equals(type)) {
             remark = remark + "修改收货人信息";
-        } else if ("note".equals(type)) {
+        } else if (OrderConstants.OrderLog.ORDER_LOG_NOTE.equals(type)) {
             remark = remark + "修改备注信息";
-        } else if ("cancel".equals(type)) {
+        } else if (OrderConstants.OrderLog.ORDER_LOG_CANCEL.equals(type)) {
             remark = remark + note;
         }
         orderOperateLog.setId(SnowflakeIdWorker.generateId());
@@ -592,7 +593,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             transaction.setStatus(OrderTradeDict.COMPLETE.getCode());
             transactionService.updateById(transaction);
             // 更新订单状态
-            if("order".equals(type)){
+            if(OrderConstants.Order.ORDER_UPDATE_TYPE.equals(type)){
                 Order order = orderMapper.selectById(orderId);
                 updateOrder(order, transaction);
             }

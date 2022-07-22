@@ -129,6 +129,9 @@
 		<script type="text/javascript" src="/assembly/jqarticle/jparticle.min.js"></script>
 		<!-- ZylVerificationCode Js-->
 		<script type="text/javascript" src="/assembly/verificationCode/verificationCode.js"></script>
+		<script type="text/javascript" src="/crypto/crypto-js.js"></script>
+		<script type="text/javascript" src="/crypto/aes.js"></script>
+		<script type="text/javascript" src="/crypto/mode-ecb.js"></script>
 		<script src="/js/axios.js"></script>
 		<script>
 			layui.use(['carousel', 'form'], function(){
@@ -160,7 +163,7 @@
 
 				//监听提交
 				form.on('submit(login)', function(data){
-					axios.post("/auth/login?username="+data.field.username+"&password="+data.field.password).then(function (response) {
+					axios.post("/auth/login?username="+data.field.username+"&password="+Encrypt(data.field.password)).then(function (response) {
 						if (response.data.success){
 							layer.alert('登录成功！')
 							//跳转原地址
@@ -244,6 +247,14 @@
 			function toLogin(type) {
 				layer.alert('暂不支持！')
 			};
+			var data = "888888";
+			var srcs  = CryptoJS.enc.Utf8.parse(data);
+			var key  = CryptoJS.enc.Utf8.parse('o7H8uIM2O5qv65l2');//Latin1 w8m31+Yy/Nw6thPsMpO5fg==
+			function Encrypt(word){
+				var srcs = CryptoJS.enc.Utf8.parse(word);
+				var encrypted = CryptoJS.AES.encrypt(srcs, key, {mode:CryptoJS.mode.ECB,padding: CryptoJS.pad.Pkcs7});
+				return encrypted.toString();
+			}
 		</script>
 	</body>
 </html>

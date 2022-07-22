@@ -58,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/", "/auth/login", "/loginTest",
                 "/auth/logout","/auth/loginPage","/login.html","/assets/**",
-                "/css/**","/data/**","/fonts/**","/img/**","/js/**","/favicon.ico",
+                "/css/**","/data/**","/fonts/**","/img/**","/js/**","/crypto/**","/favicon.ico",
                 "/assembly/**", "/layui/**", "/nacos/**", "/wx/auth/token", "/wx/home/index");
     }
 
