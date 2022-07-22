@@ -1,12 +1,15 @@
 package com.allenyll.sw.admin;
 
-import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-
+/**
+ * @author yuleilei
+ */
+@EnableSwagger2
 @ComponentScan("com.allenyll.sw")
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class SwAdminApplication {
