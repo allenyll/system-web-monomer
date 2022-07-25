@@ -28,7 +28,7 @@ import java.util.Map;
  * @date 2020-11-10 17:36:28
  */
 @Slf4j
-@Api(value = "售后申请", tags = "售后申请")
+@Api(value = "售后申请", tags = "售后申请管理")
 @RestController
 @RequestMapping("/orderAftersale")
 public class OrderAftersaleController extends BaseController<OrderAftersaleServiceImpl,OrderAftersale> {

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Api("优惠券接口")
+@Api(tags = "优惠券管理")
 @RestController
 @RequestMapping("coupon")
 public class CouponController extends BaseController<CouponServiceImpl, Coupon> {
@@ -32,6 +32,7 @@ public class CouponController extends BaseController<CouponServiceImpl, Coupon> 
     @Autowired
     CouponServiceImpl couponService;
 
+    @Override
     @ApiOperation("添加优惠券")
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public DataResponse add(@CurrentUser(isFull = true) User user, @RequestBody Coupon coupon){

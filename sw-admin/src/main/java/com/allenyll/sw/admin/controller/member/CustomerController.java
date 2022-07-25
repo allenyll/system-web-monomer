@@ -25,7 +25,7 @@ import java.util.Map;
  * @author yu.leilei
  * @since 2018-10-22
  */
-@Api(value = "用户接口", tags = "用户接口")
+@Api(value = "用户接口", tags = "小程序用户管理")
 @Slf4j
 @RestController
 @RequestMapping("/customer")
@@ -59,11 +59,13 @@ public class CustomerController extends BaseController<CustomerServiceImpl, Cust
         service.updateById(customer);
     }
 
+    @ApiOperation("[小程序接口]登录/注册用户")
     @RequestMapping(value = "/loginOrRegisterConsumer", method = RequestMethod.POST)
     public void loginOrRegisterConsumer(@RequestBody Customer customer) {
         service.loginOrRegisterConsumer(customer);
     }
 
+    @ApiOperation("根据用户名查询用户")
     @RequestMapping(value = "selectUserByName", method = RequestMethod.POST)
     public Customer selectUserByName(@RequestParam String userName) {
         return service.selectUserByName(userName);

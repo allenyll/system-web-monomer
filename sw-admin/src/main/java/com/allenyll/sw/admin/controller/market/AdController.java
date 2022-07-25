@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api("广告接口")
+@Api(tags = "广告管理")
 @Controller
 @RequestMapping("ad")
 public class AdController extends BaseController<AdServiceImpl, Ad> {

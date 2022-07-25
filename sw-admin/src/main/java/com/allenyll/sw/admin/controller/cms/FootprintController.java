@@ -26,7 +26,7 @@ import java.util.Map;
  * @date 2020-11-04 09:48:58
  */
 @Slf4j
-@Api(value = "商品浏览记录", tags = "商品浏览记录")
+@Api(value = "商品浏览记录", tags = "商品浏览记录管理")
 @RestController
 @RequestMapping("/footprint")
 public class FootprintController extends BaseController<FootprintServiceImpl,Footprint> {

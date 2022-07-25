@@ -30,7 +30,7 @@ import java.util.*;
  */
 @Slf4j
 @RestController
-@Api(value = "腾讯云文件上传接口")
+@Api(tags = "腾讯云文件上传管理")
 @RequestMapping("/file")
 public class FileCosController extends BaseController<FileServiceImpl, File> {
 

@@ -21,7 +21,7 @@ import java.util.Map;
  * @Date:         2020/5/26 10:21 下午
  * @Version:      1.0
  */
-@Api("地址管理通用接口")
+@Api(tags = "地址管理通用管理")
 @Slf4j
 @RestController
 @RequestMapping("/customerAddress")

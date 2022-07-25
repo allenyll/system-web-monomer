@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api(value = "关键字管理", tags = "关键字模块")
+@Api(value = "关键字管理", tags = "关键字管理")
 @Slf4j
 @Controller
 @RequestMapping("keywords")

@@ -31,7 +31,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("customerPoint")
-@Api(value = "用户积分相关接口")
+@Api(tags = "用户积分管理")
 public class CustomerPointController extends BaseController<CustomerPointServiceImpl, CustomerPoint> {
 
     @Autowired
@@ -73,6 +73,7 @@ public class CustomerPointController extends BaseController<CustomerPointService
     }
 
     @ResponseBody
+    @ApiOperation("根据用户查询用户积分")
     @RequestMapping(value = "/selectOne", method = RequestMethod.POST)
     public CustomerPoint selectOne(@RequestBody Map<String, Object> map) {
         QueryWrapper<CustomerPoint> customerPointEntityWrapper = new QueryWrapper<>();

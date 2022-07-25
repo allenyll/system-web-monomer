@@ -23,7 +23,7 @@ public class SwaggerConfig {
                 .apiInfo(buildApiInf())
                 .select()
                 // 需要生成文档的包的位置
-                .apis(RequestHandlerSelectors.basePackage(""))
+                .apis(RequestHandlerSelectors.basePackage("com.allenyll.sw"))
                 .paths(PathSelectors.any())
                 .build();
     }

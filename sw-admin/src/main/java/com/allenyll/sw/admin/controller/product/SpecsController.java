@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@Api(value = "规格管理接口", tags = "规格管理接口")
+@Api(value = "规格管理接口", tags = "规格管理")
 @RequestMapping("specs")
 public class SpecsController extends BaseController<SpecsServiceImpl, Specs> {
 
@@ -35,6 +35,7 @@ public class SpecsController extends BaseController<SpecsServiceImpl, Specs> {
 
     @Override
     @ResponseBody
+    @ApiOperation("添加规格")
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public DataResponse add(@CurrentUser(isFull = true) User user, @RequestBody Specs entity) {
         entity.setId(SnowflakeIdWorker.generateId());

@@ -7,6 +7,8 @@ import com.allenyll.sw.sso.exception.TokenException;
 import com.allenyll.sw.sso.service.IAuthService;
 import com.allenyll.sw.sso.util.CookieUtil;
 import com.allenyll.sw.sso.util.EncryptUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import java.util.Map;
  * @Date:         2020/8/20 2:22 下午
  * @Version:      1.0
  */
+@Api(tags = "登录认证管理")
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
@@ -51,21 +54,16 @@ public class AuthController {
 
     private static final String MEDIA_TYPE = "application/javascript;charset=UTF-8";
 
-    @GetMapping("/loginPage")
-    public String loginPage(@RequestParam(value = "from",required = false,defaultValue = "") String from, Model model) {
-        model.addAttribute("from",from);
-        return "login";
-    }
-
     /**
      * 后端登录
-     * @param username
-     * @param password
-     * @param response
-     * @return
+     * @param username 用户名
+     * @param password 密码
+     * @param response 响应
+     * @return token
      */
-    @RequestMapping("login")
+    @ApiOperation("登录")
     @ResponseBody
+    @PostMapping("login")
     public Result<AuthToken> login(HttpServletRequest request, String username, String password, HttpServletResponse response) {
         Result<AuthToken> result = new Result<>();
         //校验参数
@@ -95,12 +93,20 @@ public class AuthController {
         return result;
     }
 
+    @ApiOperation("登录页")
+    @GetMapping("/loginPage")
+    public String loginPage(@RequestParam(value = "from",required = false,defaultValue = "") String from, Model model) {
+        model.addAttribute("from",from);
+        return "login";
+    }
+
     /**
      * 认证token是否有效，跳转到指定连接
-     * @param target
-     * @param request
-     * @param response
+     * @param target 跳转链接
+     * @param request 请求头
+     * @param response 响应
      */
+    @ApiOperation("token认证")
     @ResponseBody
     @GetMapping("getAuthStatus")
     public void getAuthStatus(@RequestParam(value = "target",required = false,defaultValue = "") String target,
@@ -125,9 +131,10 @@ public class AuthController {
 
     /**
      * 判断登陆是否有效
-     * @param request
-     * @param response
+     * @param request 请求头
+     * @param response 响应
      */
+    @ApiOperation("判断登录是否有效")
     @RequestMapping(value = "authStatus", method = RequestMethod.GET, produces= MEDIA_TYPE)
     public void authStatus(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
@@ -157,6 +164,7 @@ public class AuthController {
         }
     }
 
+    @ApiOperation("退出登录")
     @RequestMapping(value = "logout", method = RequestMethod.GET)
     public void logout(HttpSession session, @RequestParam String service, HttpServletRequest request, HttpServletResponse response) {
         authService.logout(request, response);

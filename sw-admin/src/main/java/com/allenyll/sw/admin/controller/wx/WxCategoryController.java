@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Api(tags = "微信商品分类接口")
+@Api(tags = "微信商品分类管理")
 @Controller
 @RequestMapping("wx/category")
 public class WxCategoryController extends BaseController<CategoryServiceImpl, Category> {

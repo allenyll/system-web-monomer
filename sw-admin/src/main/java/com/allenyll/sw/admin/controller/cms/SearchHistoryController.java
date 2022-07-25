@@ -21,7 +21,7 @@ import java.util.Map;
  * @Version:      1.0
  */
 @Slf4j
-@Api(value = "搜索记录接口", tags = "搜索记录模块")
+@Api(value = "搜索记录接口", tags = "搜索记录管理")
 @RestController
 @RequestMapping("searchHistory")
 public class SearchHistoryController extends BaseController<SearchHistoryServiceImpl, SearchHistory> {

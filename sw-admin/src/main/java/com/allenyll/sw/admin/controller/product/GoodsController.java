@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api("商品管理相关接口")
+@Api(tags = "商品管理")
 @Controller
 @RequestMapping("goods")
 public class GoodsController extends BaseController<GoodsServiceImpl, Goods> {

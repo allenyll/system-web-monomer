@@ -18,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 @Slf4j
-@Api(value = "小程序首页", tags = "小程序首页")
+@Api(value = "小程序首页", tags = "小程序首页管理")
 @RestController
 @RequestMapping("wx/home")
 public class HomeController {
@@ -50,7 +51,7 @@ public class HomeController {
     private CacheUtil cacheUtil;
     
     @ApiOperation("【小程序接口】微信小程序首页")
-    @RequestMapping("/index")
+    @PostMapping("/index")
     public Result index(@CurrentUser(isFull = true) User user, @RequestBody Map<String, Object> params, HttpServletRequest request) {
         Result result = new Result();
         log.info("【请求开始】访问首页,请求参数,用户信息:{}", JSON.toJSONString(user));

@@ -57,6 +57,7 @@ public class CustomerBalanceController extends BaseController<CustomerBalanceSer
         return result;
     }
 
+    @ApiOperation("根据用户获取余额")
     @ResponseBody
     @RequestMapping(value = "/selectOne", method = RequestMethod.POST)
     public CustomerBalance selectOne(@RequestBody Map<String, Object> map) {

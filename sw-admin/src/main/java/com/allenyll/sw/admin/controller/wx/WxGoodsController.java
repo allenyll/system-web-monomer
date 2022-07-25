@@ -1,12 +1,7 @@
 package com.allenyll.sw.admin.controller.wx;
 
-import com.allenyll.sw.common.annotation.CurrentUser;
-import com.allenyll.sw.common.dto.GoodsQueryDto;
-import com.allenyll.sw.common.dto.GoodsResult;
 import com.allenyll.sw.common.entity.cms.SearchHistory;
 import com.allenyll.sw.common.entity.product.Goods;
-import com.allenyll.sw.common.entity.product.GoodsParam;
-import com.allenyll.sw.common.entity.system.User;
 import com.allenyll.sw.common.util.*;
 import com.allenyll.sw.system.BaseController;
 import com.allenyll.sw.system.service.cms.impl.SearchHistoryServiceImpl;
@@ -21,13 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api("微信商品管理相关接口")
+@Api(tags = "微信商品管理")
 @Controller
 @RequestMapping("wx/goods")
 public class WxGoodsController extends BaseController<GoodsServiceImpl, Goods> {

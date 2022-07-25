@@ -13,17 +13,14 @@ import com.allenyll.sw.common.util.SnowflakeIdWorker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api(value = "规格选项接口", tags = "规格选项接口")
+@Api(value = "规格选项接口", tags = "规格选项管理")
 @Controller
 @RequestMapping("specOption")
 public class SpecOptionController extends BaseController<SpecOptionServiceImpl, SpecOption> {
@@ -65,7 +62,7 @@ public class SpecOptionController extends BaseController<SpecOptionServiceImpl, 
     }
 
     @ApiOperation("根据规格获取规格选项列表")
-    @RequestMapping("getSpecsOptionBySpecsId")
+    @PostMapping("getSpecsOptionBySpecsId")
     @ResponseBody
     public Result<List<SpecOption>> getSpecsOptionBySpecsId(@RequestBody SpecsDto specsDto) {
         return service.getSpecsOptionBySpecsId(specsDto);

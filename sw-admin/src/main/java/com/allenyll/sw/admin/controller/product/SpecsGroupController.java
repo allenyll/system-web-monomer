@@ -8,6 +8,8 @@ import com.allenyll.sw.common.entity.system.User;
 import com.allenyll.sw.common.util.CollectionUtil;
 import com.allenyll.sw.common.util.DataResponse;
 import com.allenyll.sw.common.util.SnowflakeIdWorker;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Api(tags = "规格组管理")
 @Controller
 @RequestMapping("specsGroup")
 public class SpecsGroupController extends BaseController<SpecsGroupServiceImpl, SpecsGroup> {
 
     @Override
     @ResponseBody
+    @ApiOperation("添加规格组")
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public DataResponse add(@CurrentUser(isFull = true) User user, @RequestBody SpecsGroup entity) {
         entity.setId(SnowflakeIdWorker.generateId());
@@ -33,6 +37,7 @@ public class SpecsGroupController extends BaseController<SpecsGroupServiceImpl, 
 
     @Override
     @ResponseBody
+    @ApiOperation("封装规格组，前端使用")
     @RequestMapping(value = "list", method = RequestMethod.POST)
     public DataResponse list() {
         DataResponse dataResponse = super.list();

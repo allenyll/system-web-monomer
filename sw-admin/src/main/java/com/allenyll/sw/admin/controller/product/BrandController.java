@@ -21,7 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api("品牌接口")
+/**
+ * @author yuleilei
+ */
+@Api(value = "品牌接口", tags = "品牌管理")
 @Controller
 @RequestMapping("brand")
 public class BrandController extends BaseController<BrandServiceImpl, Brand> {

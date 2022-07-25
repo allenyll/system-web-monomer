@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Api(tags = "订单详情接口")
+@Api(tags = "订单详情管理")
 @Controller
 @RequestMapping("orderDetail")
 public class OrderDetailController extends BaseController<OrderDetailServiceImpl, OrderDetail> {

@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api("商品SKU接口")
+@Api(tags = "商品SKU管理")
 @Controller
 @RequestMapping("sku")
 public class SkuController extends BaseController<SkuServiceImpl, Sku> {

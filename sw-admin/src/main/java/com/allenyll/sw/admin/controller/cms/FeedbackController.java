@@ -21,7 +21,7 @@ import java.util.Map;
  * @Version:      1.0
  */
 @Slf4j
-@Api(value = "意见反馈", tags = "意见反馈")
+@Api(value = "意见反馈", tags = "意见反馈管理")
 @RestController
 @RequestMapping("/feedback")
 public class FeedbackController extends BaseController<FeedbackServiceImpl,Feedback> {

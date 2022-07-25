@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Api("订单接口")
+@Api(tags = "订单管理")
 @RestController
 @RequestMapping("order")
 public class OrderController extends BaseController<OrderServiceImpl, Order> {

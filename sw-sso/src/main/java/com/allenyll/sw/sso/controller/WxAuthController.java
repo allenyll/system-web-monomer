@@ -7,6 +7,8 @@ import com.allenyll.sw.common.util.Result;
 import com.allenyll.sw.common.util.StringUtil;
 import com.allenyll.sw.common.entity.auth.AuthToken;
 import com.allenyll.sw.sso.service.impl.WxUserServiceImpl;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,7 @@ import java.util.Map;
  * @Date:         2020/8/20 2:22 下午
  * @Version:      1.0
  */
+@Api(tags = "微信登录管理")
 @RestController
 @RequestMapping("/wx/auth")
 public class WxAuthController {
@@ -33,10 +36,12 @@ public class WxAuthController {
 
     @Autowired
     private WxUserServiceImpl wxUserService;
+
     /**
      * 微信小程序登录
-     * @return
+     * @return token
      */
+    @ApiOperation("[小程序接口]登录，获取token")
     @RequestMapping(value = "/token", method = RequestMethod.POST)
     public Result<AuthToken> token(HttpServletRequest request, @RequestBody CustomerQueryDto customerQueryDto) {
         Result<AuthToken> result = new Result<>();

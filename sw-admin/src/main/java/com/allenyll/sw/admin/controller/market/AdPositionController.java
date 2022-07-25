@@ -7,6 +7,7 @@ import com.allenyll.sw.common.entity.market.AdPosition;
 import com.allenyll.sw.common.entity.system.User;
 import com.allenyll.sw.common.util.DataResponse;
 import com.allenyll.sw.common.util.SnowflakeIdWorker;
+import io.swagger.annotations.Api;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author yuleilei
+ */
+@Api(tags = "广告位管理")
 @Controller
 @RequestMapping("adPosition")
 public class AdPositionController extends BaseController<AdPositionServiceImpl, AdPosition> {

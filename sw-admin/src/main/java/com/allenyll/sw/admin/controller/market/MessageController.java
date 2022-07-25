@@ -20,8 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author yuleilei
+ */
 @Slf4j
-@Api("消息接口")
+@Api(tags = "消息管理")
 @Controller
 @RequestMapping("message")
 public class MessageController extends BaseController<MessageServiceImpl, Message> {

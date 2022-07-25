@@ -26,7 +26,7 @@ import java.util.Map;
  * @Date:         2020/11/5 7:54 下午
  * @Version:      1.0
  */
-@Api("调度任务接口相关接口")
+@Api(tags = "调度任务管理")
 @Slf4j
 @Controller
 @RequestMapping("job")
@@ -63,7 +63,7 @@ public class JobController extends BaseController<JobServiceImpl, Job> {
 
     @ResponseBody
     @ApiOperation("更新调度任务状态")
-    @RequestMapping("updateStatus")
+    @PostMapping("updateStatus")
     public DataResponse updateStatus(@CurrentUser(isFull = true) User user, @RequestBody Map<String, Object> params) throws SchedulerException {
         log.info("开始更新调度任务状态");
         String flag = MapUtil.getMapValue(params, "flag");
@@ -111,7 +111,7 @@ public class JobController extends BaseController<JobServiceImpl, Job> {
 
     @ResponseBody
     @ApiOperation("立即执行调度任务状态")
-    @RequestMapping("executeJob")
+    @PostMapping("executeJob")
     public Result executeJob(@CurrentUser(isFull = true) User user, @RequestBody Map<String, Object> params) throws Exception {
         Result result = jobService.executeJob(user, params);
         return result;

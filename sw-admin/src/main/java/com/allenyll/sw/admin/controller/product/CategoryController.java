@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Api(tags = "商品分类接口")
+@Api(tags = "商品分类管理")
 @Controller
 @RequestMapping("category")
 public class CategoryController extends BaseController<CategoryServiceImpl, Category> {

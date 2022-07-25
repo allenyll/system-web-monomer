@@ -6,6 +6,7 @@ import com.allenyll.sw.system.service.pay.impl.WxPaymentServiceImpl;
 import com.allenyll.sw.common.entity.system.User;
 import com.allenyll.sw.common.util.*;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import java.util.*;
  * @Version:      1.0
  */
 @Controller
+@Api(tags = "交易管理")
 @RequestMapping("/pay")
 public class WxPayController {
 
@@ -51,7 +53,8 @@ public class WxPayController {
     }   
 
     @ResponseBody
-    @RequestMapping("/payNotify")
+    @ApiOperation("支付回调")
+    @PostMapping("/payNotify")
     public String payNotify(HttpServletRequest request, HttpServletResponse response) {
         try {
            return wxPaymentService.payNotify(request, response);
@@ -63,6 +66,7 @@ public class WxPayController {
 
     @Transactional
     @ResponseBody
+    @ApiOperation("发起支付")
     @RequestMapping(value = "createUnifiedOrder", method = RequestMethod.POST)
     public Result<Map<String, Object>> createUnifiedOrder(@CurrentUser(isFull = true) User user, HttpServletRequest request, HttpServletResponse response) {
         return wxPaymentService.createUnifiedOrder(user, request, response);
@@ -79,15 +83,16 @@ public class WxPayController {
     }
 
     @ResponseBody
+    @ApiOperation("支付签名")
     @RequestMapping(value = "sign", method = RequestMethod.POST)
     public DataResponse sign(HttpServletRequest request, HttpServletResponse response) {
         return wxPaymentService.paySign(request, response);
     }
 
-    @RequestMapping(value = "/updateStatus",method = RequestMethod.POST)
     @ResponseBody
+    @ApiOperation("更细订单状态")
+    @RequestMapping(value = "/updateStatus",method = RequestMethod.POST)
     public DataResponse updateObj(@RequestBody Map<String, Object> params){
         return orderService.updateOrderStatus(params);
     }
-
 }
