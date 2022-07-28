@@ -6,6 +6,10 @@ import com.allenyll.sw.core.cache.util.CacheUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisServerCommands;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -13,6 +17,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
@@ -75,6 +80,19 @@ public class CacheController {
         countDownLatch.await();
         LOGGER.info("count:{}", count);
         return "success";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "getRedisInfo", method = RequestMethod.GET)
+    public DataResponse getRedisInfo() {
+        Properties properties = stringRedisTemplate.execute(((RedisCallback<Properties>) RedisServerCommands::info));
+        Long dbSize = stringRedisTemplate.execute(RedisServerCommands::dbSize);
+        Properties commandProperties = stringRedisTemplate.execute((RedisCallback<Properties>) redisConnection
+                -> redisConnection.info("commandstats"));
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> list =  cacheUtil.getAllCache();
+        result.put("list", list);
+        return DataResponse.success(result);
     }
 
     @ResponseBody

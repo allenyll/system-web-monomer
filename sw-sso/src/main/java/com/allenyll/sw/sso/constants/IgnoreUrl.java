@@ -18,9 +18,9 @@ public class IgnoreUrl {
             "/assembly/**",
             // 登录相关
             "/nacos/**",
-            "/", "/auth/login", "/loginTest",
+            "/", "/auth/**", "/loginTest",
             "/error",
-            "/auth/logout","/auth/loginPage",
+            "/cache/**",
             // 小小程序
             "/wx/**",
             // -- swagger ui

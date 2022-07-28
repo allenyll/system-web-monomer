@@ -1,5 +1,6 @@
 package com.allenyll.sw.sso.controller;
 
+import com.allenyll.sw.common.annotation.Log;
 import com.allenyll.sw.common.util.Result;
 import com.allenyll.sw.common.util.StringUtil;
 import com.allenyll.sw.common.entity.auth.AuthToken;
@@ -62,6 +63,7 @@ public class AuthController {
      * @return token
      */
     @ApiOperation("登录")
+    @Log(value = "登录", type = "SW0301")
     @ResponseBody
     @PostMapping("login")
     public Result<AuthToken> login(HttpServletRequest request, String username, String password, HttpServletResponse response) {

@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
@@ -79,20 +82,28 @@ public class LogAspect {
         Long userId = null;
         String account = "";
         if(args.length > 0){
-            String params=  "";
-            for(int i=0; i<args.length; i++){
-                if (args[i] instanceof User) {
-                    User user = (User) args[i];
+            StringBuilder params= new StringBuilder();
+            for (Object arg : args) {
+                if (arg instanceof ServletRequest || arg instanceof ServletResponse || arg instanceof MultipartFile) {
+                    //ServletRequest不能序列化，从入参里排除，
+                    // 否则报异常：java.lang.IllegalStateException: It is illegal to call
+                    // this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
+                    //ServletResponse不能序列化 从入参里排除，
+                    // 否则报异常：java.lang.IllegalStateException: getOutputStream() has already been called for this response
+                    continue;
+                }
+                if (arg instanceof User) {
+                    User user = (User) arg;
                     userId = user.getId();
                     account = user.getAccount();
                 } else {
-                    params += "[" + JsonUtil.beanToJson(args[i]) + "], ";
+                    params.append("[").append(JsonUtil.beanToJson(arg)).append("], ");
                 }
             }
-            if(StringUtil.isNotEmpty(params)){
-                params = params.substring(0, params.length() - 2);
+            if(StringUtil.isNotEmpty(params.toString())){
+                params = new StringBuilder(params.substring(0, params.length() - 2));
             }
-            sysLog.setParams(params);
+            sysLog.setParams(params.toString());
         }
 
         // 获取request
@@ -103,6 +114,7 @@ public class LogAspect {
         sysLog.setUserId(userId);
         sysLog.setAccount(account);
         sysLog.setOperateTime(time);
+        assert log != null;
         sysLog.setLogType(log.type());
         sysLog.setIsDelete(0);
         sysLog.setAddTime(DateUtil.getCurrentDateTime());

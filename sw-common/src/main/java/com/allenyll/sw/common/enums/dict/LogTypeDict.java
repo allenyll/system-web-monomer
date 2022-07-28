@@ -10,7 +10,9 @@ import com.allenyll.sw.common.util.StringUtil;
  */
 public enum LogTypeDict {
 
+    // 系统日志
     LOGIN("SW0301", "系统日志"),
+    // 操作日志
     OPERATE("SW0302", "操作日志");
 
     String code;
