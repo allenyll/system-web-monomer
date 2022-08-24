@@ -98,7 +98,7 @@ public class CosFileUtil {
                 upload.waitForCompletion();
                 log.debug("上传结束时间: {}", sdf.format(new Date()), " + 上传成功");
                 //获取上传成功之后文件的下载地址
-                URL url = cosClient.generatePresignedUrl(bucketName + "-" + cosConfig.getAppId(), key, new Date(new Date().getTime() + 5 * 60 * 10000));
+                URL url = cosClient.generatePresignedUrl(bucketName + "-" + cosConfig.getAppId(), key, new Date(System.currentTimeMillis() + 5 * 60 * 10000));
             } catch (InterruptedException e) {
                 log.error("上传失败");
                 e.printStackTrace();
@@ -127,7 +127,7 @@ public class CosFileUtil {
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, localFile);
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
         log.debug("上传结束时间: {}", sdf.format(new Date()), " + 上传成功");
-        URL url = cosClient.generatePresignedUrl(bucketName + "-" + cosConfig.getAppId(), key, new Date(new Date().getTime() + 5 * 60 * 10000));
+        URL url = cosClient.generatePresignedUrl(bucketName + "-" + cosConfig.getAppId(), key, new Date(System.currentTimeMillis() + 5 * 60 * 10000));
         result.put("fileName", key);
         result.put("url", url);
         return result;

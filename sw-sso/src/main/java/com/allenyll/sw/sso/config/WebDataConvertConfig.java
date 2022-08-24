@@ -32,6 +32,7 @@ public class WebDataConvertConfig extends WebMvcConfigurerAdapter {
         super.addResourceHandlers(registry);
     }
 
+    @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         ObjectMapper objectMapper = new ObjectMapper();

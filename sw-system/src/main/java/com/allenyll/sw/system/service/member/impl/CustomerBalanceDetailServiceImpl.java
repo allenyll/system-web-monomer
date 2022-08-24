@@ -41,7 +41,7 @@ public class CustomerBalanceDetailServiceImpl extends ServiceImpl<CustomerBalanc
 
         QueryWrapper<CustomerBalanceDetail> wrapper = new QueryWrapper<>();
         wrapper.eq("CUSTOMER_ID", customerId);
-        if(!action.equals("SW0500")){
+        if(!"SW0500".equals(action)){
             wrapper.eq("TYPE", action);
         }
         wrapper.eq("IS_DELETE", 0);

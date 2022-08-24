@@ -1,5 +1,6 @@
 package com.allenyll.sw.sso.service.impl;
 
+import com.allenyll.sw.common.constants.RegularConstants;
 import com.allenyll.sw.common.util.JwtUtil;
 import com.allenyll.sw.common.util.StringUtil;
 import com.allenyll.sw.core.cache.util.CacheUtil;
@@ -51,11 +52,11 @@ public class AuthServiceImpl implements IAuthService {
 
     @Value("${auth.ttl}")
     private long ttl;
-    
+
     @Override
     public AuthToken login(HttpServletRequest request, AuthToken authToken, String username, String password, String clientId, String clientSecret) {
         String uri = request.getRequestURL().toString();
-        Pattern pattern = Pattern.compile("/");
+        Pattern pattern = Pattern.compile(RegularConstants.PATH);
         Matcher findMatcher = pattern.matcher(uri);
         int number = 0;
         while(findMatcher.find()) {

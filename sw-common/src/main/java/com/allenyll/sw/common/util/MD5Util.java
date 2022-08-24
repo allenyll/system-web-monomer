@@ -1,5 +1,7 @@
 package com.allenyll.sw.common.util;
 
+import com.allenyll.sw.common.constants.RegularConstants;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -36,8 +38,11 @@ public class MD5Util {
         //转换为十六进制字符串
         StringBuilder hex = new StringBuilder(hash.length * 2);
         for (byte b : hash) {
-            if ((b & 0xFF) < 0x10) hex.append("0");
-            hex.append(Integer.toHexString(b & 0xFF));
+            if ((b & 0xFF) < 0x10) {
+                hex.append("0");
+            } else {
+                hex.append(Integer.toHexString(b & 0xFF));
+            }
         }
         return hex.toString().toUpperCase();
     }
@@ -62,8 +67,11 @@ public class MD5Util {
         //转换为十六进制字符串
         StringBuilder hex = new StringBuilder(hash.length * 2);
         for (byte b : hash) {
-            if ((b & 0xFF) < 0x10) hex.append("0");
-            hex.append(Integer.toHexString(b & 0xFF));
+            if ((b & 0xFF) < 0x10) {
+                hex.append("0");
+            } else {
+                hex.append(Integer.toHexString(b & 0xFF));
+            }
         }
         return hex.toString().toLowerCase();
     }
@@ -94,7 +102,7 @@ public class MD5Util {
      * Unicode中文编码转换成字符串
      */
     public static String unicodeToString(String str) {
-        Pattern pattern = Pattern.compile("(\\\\u(\\p{XDigit}{4}))");
+        Pattern pattern = Pattern.compile(RegularConstants.UNICODE_TO_STR);
         Matcher matcher = pattern.matcher(str);
         char ch;
         while (matcher.find()) {
