@@ -1,5 +1,7 @@
 package com.allenyll.sw.common.util;
 
+import com.allenyll.sw.common.constants.NumConstants;
+
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -170,16 +172,16 @@ public class StringUtil {
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(id);
         String numStr = m.replaceAll("").trim();
-        if (numStr.length() > 19){
+        if (numStr.length() > NumConstants.IntNumCons.NINETEEN){
             numStr = numStr.substring(0, 18);
         }
         String _id = String.format("%04d", Long.parseLong(numStr)).substring(0,4);
         sb.append(_id);
         //三位随机数
-        String result="";
+        StringBuilder result= new StringBuilder();
         Random random=new Random();
-        for(int i=0;i<3;i++){
-            result += random.nextInt(10);
+        for (int i = 0; i < 3; i++){
+            result.append(random.nextInt(10));
         }
         sb.append(result);
         return sb.toString();

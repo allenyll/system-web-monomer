@@ -1,5 +1,6 @@
 package com.allenyll.sw.system.service.member.impl;
 
+import com.allenyll.sw.common.constants.NumConstants;
 import com.allenyll.sw.common.entity.customer.CustomerPointDetail;
 import com.allenyll.sw.common.util.DataResponse;
 import com.allenyll.sw.common.util.MapUtil;
@@ -51,7 +52,7 @@ public class CustomerPointServiceImpl extends ServiceImpl<CustomerPointMapper, C
 
         long isMore = list.getSize();
 
-        if(isMore < 10){
+        if(isMore < NumConstants.IntNumCons.TEN){
             result.put("is_more", 0);
         }else {
             result.put("is_more", 1);

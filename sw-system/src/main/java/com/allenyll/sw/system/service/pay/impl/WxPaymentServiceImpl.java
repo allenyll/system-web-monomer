@@ -3,7 +3,9 @@ package com.allenyll.sw.system.service.pay.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.allenyll.sw.common.annotation.CurrentUser;
+import com.allenyll.sw.common.constants.BaseConstants;
 import com.allenyll.sw.common.constants.CacheKeys;
+import com.allenyll.sw.common.constants.NumConstants;
 import com.allenyll.sw.common.constants.WxConstants;
 import com.allenyll.sw.common.entity.order.Order;
 import com.allenyll.sw.common.entity.order.OrderDetail;
@@ -201,7 +203,7 @@ public class WxPaymentServiceImpl implements IWxPaymentService {
         WxPayOrderNotifyResult result = wxService.parseOrderNotifyResult(xmlResult);
         log.info("支付成功回调返回：{}", JSON.toJSONString(result));
         // 判断支付是否成功
-        if ("SUCCESS".equals(result.getReturnCode())) {
+        if (BaseConstants.STR_SUCCESS.equals(result.getReturnCode())) {
             // 加入自己处理订单的业务逻辑，需要判断订单是否已经支付过，否则可能会重复调用
             String orderNo = result.getOutTradeNo();
             QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
@@ -471,7 +473,7 @@ public class WxPaymentServiceImpl implements IWxPaymentService {
             if (num == null) {
                 cacheUtil.set(CacheKeys.WX_CACHE_ZONE + CacheKeys.ORDER_PAY + orderId, 1);
                 this.queryOrder(currentUser, orderId, transactionId);
-            } else if (num <= 3) {
+            } else if (num <= NumConstants.IntNumCons.THREE) {
                 cacheUtil.remove(CacheKeys.WX_CACHE_ZONE + CacheKeys.ORDER_PAY + orderId);
                 cacheUtil.set(CacheKeys.WX_CACHE_ZONE + CacheKeys.ORDER_PAY + orderId, ++num);
                 this.queryOrder(currentUser, orderId, transactionId);

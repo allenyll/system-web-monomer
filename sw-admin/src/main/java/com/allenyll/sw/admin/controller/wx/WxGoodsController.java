@@ -1,5 +1,6 @@
 package com.allenyll.sw.admin.controller.wx;
 
+import com.allenyll.sw.common.constants.BaseConstants;
 import com.allenyll.sw.common.entity.cms.SearchHistory;
 import com.allenyll.sw.common.entity.product.Goods;
 import com.allenyll.sw.common.util.*;
@@ -82,13 +83,13 @@ public class WxGoodsController extends BaseController<GoodsServiceImpl, Goods> {
         QueryWrapper<Goods> wrapper = new QueryWrapper<>();
         wrapper.eq("IS_DELETE", 0);
         String sort = MapUtil.getString(params, "sort");
-        if ("default".equals(sort)) {
+        if (BaseConstants.STR_DEFAULT.equals(sort)) {
             // 综合排序处理
             sort = "goods_seq";
         }
         String order = MapUtil.getString(params, "order");
         boolean isAsc = true;
-        if ("asc".endsWith(order)) {
+        if (BaseConstants.STR_ASC.endsWith(order)) {
             isAsc = true;
         } else {
             isAsc = false;

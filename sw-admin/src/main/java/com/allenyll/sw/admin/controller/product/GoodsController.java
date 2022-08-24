@@ -1,5 +1,6 @@
 package com.allenyll.sw.admin.controller.product;
 
+import com.allenyll.sw.common.constants.BaseConstants;
 import com.allenyll.sw.system.service.file.impl.FileServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +16,7 @@ import com.allenyll.sw.common.entity.product.Goods;
 import com.allenyll.sw.common.entity.product.GoodsParam;
 import com.allenyll.sw.common.entity.system.User;
 import com.allenyll.sw.common.util.*;
+import com.qcloud.Module.Base;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -271,13 +273,13 @@ public class GoodsController extends BaseController<GoodsServiceImpl, Goods> {
         QueryWrapper<Goods> wrapper = new QueryWrapper<>();
         wrapper.eq("IS_DELETE", 0);
         String sort = MapUtil.getString(params, "sort");
-        if ("default".equals(sort)) {
+        if (BaseConstants.STR_DEFAULT.equals(sort)) {
             // 综合排序处理
             sort = "goods_seq";
         }
         String order = MapUtil.getString(params, "order");
         boolean isAsc = true;
-        if ("asc".endsWith(order)) {
+        if (BaseConstants.STR_ASC.endsWith(order)) {
             isAsc = true;
         } else {
             isAsc = false;

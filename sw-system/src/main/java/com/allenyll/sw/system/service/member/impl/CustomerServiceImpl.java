@@ -1,5 +1,6 @@
 package com.allenyll.sw.system.service.member.impl;
 
+import com.allenyll.sw.common.constants.NumConstants;
 import com.allenyll.sw.common.enums.dict.SexDict;
 import com.allenyll.sw.common.enums.dict.UserStatus;
 import com.allenyll.sw.core.cache.util.CacheUtil;
@@ -86,9 +87,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customer.setAddTime(date);
             customer.setUpdateTime(date);
             String gender = "";
-            if("1".equals(customer.getGender())){
+            if(NumConstants.StrNumCons.ONE.equals(customer.getGender())){
                 gender = SexDict.MAN.getCode();
-            } else if("0".equals(customer.getGender())){
+            } else if(NumConstants.StrNumCons.ZERO.equals(customer.getGender())){
                 gender = SexDict.WOMAN.getCode();
             }
             customer.setGender(gender);
@@ -132,9 +133,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Customer hasCustomer = customerMapper.selectOne(wrapper);
         if (hasCustomer != null) {
             String gender = "";
-            if("1".equals(customer.getGender())){
+            if(NumConstants.StrNumCons.ONE.equals(customer.getGender())){
                 gender = SexDict.MAN.getCode();
-            } else if("0".equals(customer.getGender())){
+            } else if(NumConstants.StrNumCons.ZERO.equals(customer.getGender())){
                 gender = SexDict.WOMAN.getCode();
             }
             hasCustomer.setGender(gender);
@@ -245,9 +246,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
             if(StringUtil.isNotEmpty(sex)){
                 String gender = "";
-                if("1".equals(sex)){
+                if(NumConstants.StrNumCons.ONE.equals(sex)){
                     gender = SexDict.MAN.getCode();
-                } else if("0".equals(sex)){
+                } else if(NumConstants.StrNumCons.ZERO.equals(sex)){
                     gender = SexDict.WOMAN.getCode();
                 }
                 customer.setGender(gender);

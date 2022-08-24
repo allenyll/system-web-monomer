@@ -23,4 +23,18 @@ public interface BaseConstants {
     String SW_WECHAT = "wx";
 
     String LOGIN_TYPE = "login-type";
+
+    String STR_SUCCESS = "SUCCESS";
+
+    String STR_FAIL = "FAIL";
+
+    String STR_DEFAULT = "default";
+
+    String STR_ASC = "asc";
+
+    String STR_MENU = "menu";
+
+    String STR_UNKNOWN = "unknown";
+
+    String STR_API_DOCS = "api-docs";
 }

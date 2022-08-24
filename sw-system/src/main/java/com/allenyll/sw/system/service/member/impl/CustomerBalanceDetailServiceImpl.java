@@ -1,5 +1,7 @@
 package com.allenyll.sw.system.service.member.impl;
 
+import com.allenyll.sw.common.constants.NumConstants;
+import com.allenyll.sw.common.enums.dict.PointDict;
 import com.allenyll.sw.common.util.DataResponse;
 import com.allenyll.sw.common.util.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -41,7 +43,7 @@ public class CustomerBalanceDetailServiceImpl extends ServiceImpl<CustomerBalanc
 
         QueryWrapper<CustomerBalanceDetail> wrapper = new QueryWrapper<>();
         wrapper.eq("CUSTOMER_ID", customerId);
-        if(!"SW0500".equals(action)){
+        if(!PointDict.NO.getCode().equals(action)){
             wrapper.eq("TYPE", action);
         }
         wrapper.eq("IS_DELETE", 0);
@@ -50,7 +52,7 @@ public class CustomerBalanceDetailServiceImpl extends ServiceImpl<CustomerBalanc
 
         long isMore = list.getSize();
 
-        if(isMore < 10){
+        if(isMore < NumConstants.IntNumCons.TEN){
             result.put("is_more", 0);
         }else {
             result.put("is_more", 1);

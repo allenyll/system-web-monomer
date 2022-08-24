@@ -239,7 +239,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         wrapper.orderBy(true, false, "ORDER_TIME");
 
         String  type = queryDto.getType();
-        if ("AFTERSALE".equals(type)) {
+        if (OrderConstants.Order.AFTER_SALE_TYPE.equals(type)) {
             wrapper.in("ORDER_STATUS", Arrays.asList("SW0701", "SW0702", "SW0703", "SW0704", "SW0705", "SW0706"));
         }
 

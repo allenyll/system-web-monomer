@@ -60,7 +60,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
         QueryWrapper<Menu> wrapper = new QueryWrapper<>();
         wrapper.eq("is_delete", 0);
-        if ("menu".equals(type)) {
+        if (BaseConstants.STR_MENU.equals(type)) {
             wrapper.eq("menu_type", "SW0101");
         }
 

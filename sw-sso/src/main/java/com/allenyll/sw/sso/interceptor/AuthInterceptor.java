@@ -40,7 +40,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
         String path = request.getRequestURI();
-        if (path.indexOf("api-docs") != -1) {
+        if (path.contains(BaseConstants.STR_API_DOCS)) {
             return false;
         }
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);

@@ -1,5 +1,6 @@
 package com.allenyll.sw.sso.service.impl;
 
+import com.allenyll.sw.common.constants.BaseConstants;
 import com.allenyll.sw.common.entity.auth.AuthToken;
 import com.allenyll.sw.common.entity.auth.AuthUser;
 import com.allenyll.sw.common.entity.customer.Customer;
@@ -154,7 +155,7 @@ public class WxUserServiceImpl extends ServiceImpl<CustomerMapper, Customer> imp
         Map<String, Object> map = new HashMap<>();
         String appId = weChatProperties.getAppId();
         String secret = weChatProperties.getAppSecret();
-        if ("sweb".equals(mode)) {
+        if (BaseConstants.SYSTEM_WEB.equals(mode)) {
             appId = weChatProperties.getAppId2();
             secret = weChatProperties.getAppSecret2();
         }

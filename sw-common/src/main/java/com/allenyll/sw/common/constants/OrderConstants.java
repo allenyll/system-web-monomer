@@ -12,6 +12,8 @@ public class OrderConstants {
         String ORDER_CANCEL_TYPE = "rabbit";
         
         String ORDER_UPDATE_TYPE = "order";
+
+        String AFTER_SALE_TYPE = "AFTERSALE";
     }
     
     public interface OrderLog {
